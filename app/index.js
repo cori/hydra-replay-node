@@ -38,10 +38,15 @@ let codePlayer;
   codeRecorder.listen();
 
   setInterval(() => {
-    if(codeRecorder === undefined) return;
+    if (codeRecorder === undefined) {
+      return;
+    }
     const records = codeRecorder.getRecords();
     console.log(records);
-    codePlayer.addOperations(records);
+    if (records.length > 0) {
+      codePlayer.addOperations(records);
+    }
+    codePlayer.play();
   }, 10000);
 
   const canvas = document.createElement("CANVAS");
