@@ -5,6 +5,8 @@ require("codemirror/addon/hint/show-hint");
 require("codemirror/addon/selection/mark-selection");
 require("codemirror/addon/comment/comment");
 
+const CodeRecord = require("codemirror-record");
+
 const Keymaps = require('./keymaps.js')
 
 // hydra
@@ -29,6 +31,12 @@ cm.setValue(
 
 new Keymaps({cm});
 
+const codeRecorder = new CodeRecord(cm);
+codeRecorder.listen();
+
+setInterval(()=>{
+})
+
 const canvas = document.createElement("CANVAS");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -46,3 +54,6 @@ const hydra = new Hydra({
   const code = cm.getValue();
   hydra.eval(code);
 }
+
+// overwrite hydra mouse :o
+var mouse = require('./mouse.js');
