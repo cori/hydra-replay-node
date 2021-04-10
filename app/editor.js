@@ -4,6 +4,7 @@ const html = require("choo/html");
 // export module
 module.exports = function(state, emit) {  
   return html`
+  <div>
   <div id="canvas-container"></div>
   <div id="editors">
     <div id="editor-container" class="container"></div>
@@ -17,6 +18,7 @@ module.exports = function(state, emit) {
     <button onclick="playback(true)">
       play from top
     </button>
+  </div>
   </div>`;
   // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
 

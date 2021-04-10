@@ -28,12 +28,18 @@ app.emitter.on('setText', function (e) {
 })
 
 // import a template
-const welcome = require("./welcome.js");
+const views = {
+  welcome: require("./welcome.js"),
+  editor: require("./editor.js"),
+  replay: require("./replay.js"),
+}
 
-app.route("/", welcome);
+app.route("/", views.welcome);
+app.route("#editor", views.editor);
+app.route("#replay", views.replay);
 
 // start app
 app.mount("#choomount");
 
-console.log("!main", welcome);
+console.log("!main", views.welcome);
 

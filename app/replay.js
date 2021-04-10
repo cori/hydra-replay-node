@@ -7,7 +7,7 @@ module.exports = function(state, emit) {
   <div>
   <h1>Hydra Replay</h1>
   <p><a href="/#editor">Start new session</a></p>
-  <p><a href="/#replay">Replay Session</a></p>
+  <p>Replay Session</p>
   </div>`;
   // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
 
