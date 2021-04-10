@@ -49,14 +49,18 @@ h1 {
   position: relative;
   top: 0;
   left: 0;
-  margin: 20px;
+  margin: 20px 0 20px 0;
   box-sizing: border-box;
   z-index: 1;
   width: 100%;
-  height: 50vh;
+  height: calc(50vh - 40px);
 
   background-color: rgba(255, 255, 255, 0);
   font-size: 20pt;
+}
+
+span[role=presentation] {
+  background-color: rgba(0,0,0,0.75);
 }
 
 #canvas-container {
@@ -70,11 +74,16 @@ h1 {
 
 #buttons {
   position: absolute;
-  top: 50vh;
+  top: calc(50vh - 10px);
   left: 0;
   z-index: 1;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
+#buttons > * {
+  float: left;
+  margin: 0;
+}
 .styled-background {
   background-color: salmon
 }
