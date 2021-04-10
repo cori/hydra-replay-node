@@ -6,6 +6,8 @@ require("codemirror/addon/hint/show-hint");
 require("codemirror/addon/selection/mark-selection");
 require("codemirror/addon/comment/comment");
 
+const Keymaps = require('./keymaps.js')
+
 // hydra
 const Hydra = require("hydra-synth");
 
@@ -33,22 +35,39 @@ cm.setValue(
   `osc(50,0.1,1.5).rotate(()=>mouse.y/100).modulate(noise(3),()=>mouse.x/window.innerWidth/4).out()`
 );
 
+new Keymaps({cm});
+
+var hydra = new Hydra({
+  canvas,
+  detectAudio: false,
+  enableStreamCapture: false
+});
+{
+  // init
+  const code = cm.getValue();
+  hydra.eval(code);
+}
+
+},{"./keymaps.js":2,"codemirror/addon/comment/comment":4,"codemirror/addon/hint/javascript-hint":5,"codemirror/addon/hint/show-hint":6,"codemirror/addon/selection/mark-selection":7,"codemirror/lib/codemirror":8,"codemirror/mode/javascript/javascript":9,"hydra-synth":14}],2:[function(require,module,exports){
+const hotkeys = require("hotkeys-js");
+const mapping = require("./settings.json").keymaps;
+
 // https://github.com/ojack/hydra/blob/3dcbf85c22b9f30c45b29ac63066e4bbb00cf225/hydra-server/app/src/editor.js
-const flashCode = function(start, end) {
+const flashCode = function(cm, start, end) {
   if (!start) start = { line: cm.firstLine(), ch: 0 };
   if (!end) end = { line: cm.lastLine() + 1, ch: 0 };
   var marker = cm.markText(start, end, { className: "styled-background" });
   setTimeout(() => marker.clear(), 300);
 };
 
-const getLine = function() {
+const getLine = function(cm) {
   var c = cm.getCursor();
   var s = cm.getLine(c.line);
   flashCode({ line: c.line, ch: 0 }, { line: c.line + 1, ch: 0 });
   return s;
 };
 
-const getCurrentBlock = function() {
+const getCurrentBlock = function(cm) {
   // thanks to graham wakefield + gibber
   var editor = cm;
   var pos = editor.getCursor();
@@ -75,41 +94,77 @@ const getCurrentBlock = function() {
   return str;
 };
 
-var hydra = new Hydra({
-  canvas,
-  detectAudio: false,
-  enableStreamCapture: false
-});
-{
-  // init
-  const code = cm.getValue();
-  hydra.eval(code);
-}
-
-window.onkeydown = e => {
-  if (cm.hasFocus()) {
-    if (e.keyCode === 13) {
-      e.preventDefault();
-      if (e.ctrlKey === true && e.shiftKey === true) {
-        // ctrl - shift - enter: evalAll
-        const code = cm.getValue();
-        flashCode();
-        hydra.eval(code);
-      } else if (e.ctrlKey === true && e.shiftKey === false) {
-        // ctrl - enter: evalLine
-        const code = getLine();
-        hydra.eval(code);
-      } else if (e.altKey === true) {
-        // alt - enter: evalBlock
-        const code = getCurrentBlock();
-        console.log(code);
-        hydra.eval(code);
-      }
+const commands = {
+  evalAll: ({ e, cm }) => {
+    e.preventDefault();
+    const code = cm.getValue();
+    flashCode(cm);
+    eval(code);
+  },
+  toggleEditor: ({ e, cm }) => {
+    e.preventDefault();
+    const editors = document.getElementById("editors");
+    if(editors.style.visibility == "hidden") {
+      editors.style.visibility == "visibl";
     }
+    else {
+      editors.style.visibility == "hidden";
+    }
+  },
+  evalLine: ({ e, cm }) => {
+    e.preventDefault();
+    const code = getLine(cm);
+    eval(code);
+  },
+  toggleComment: ({ e, cm }) => {
+    e.preventDefault();
+    cm.toggleComment();
+  },
+  evalBlock: ({ e, cm }) => {
+    e.preventDefault();
+    const code = getCurrentBlock(cm);
+    console.log(code);
+    eval(code);
   }
 };
 
-},{"codemirror/addon/comment/comment":2,"codemirror/addon/hint/javascript-hint":3,"codemirror/addon/hint/show-hint":4,"codemirror/addon/selection/mark-selection":5,"codemirror/lib/codemirror":6,"codemirror/mode/javascript/javascript":7,"hydra-synth":9}],2:[function(require,module,exports){
+class Keymaps {
+  constructor({ cm }) {
+    // enable capturing in text area
+    hotkeys.filter = function(event) {
+      return true;
+    };
+
+    const commandNames = Object.keys(mapping);
+    for (const commandName of commandNames) {
+      const hk = mapping[commandName];
+      if (hk.enabled && typeof commands[commandName] === "function") {
+        hotkeys(hk.key, function(e, handler) {
+          commands[commandName]({ e, cm });
+        });
+      }
+    }
+  }
+}
+
+module.exports = Keymaps;
+
+},{"./settings.json":3,"hotkeys-js":12}],3:[function(require,module,exports){
+module.exports={
+    "comment1": "do not include sensitive info such as api keys and passwords",
+    "comment2": "because this file will be bundled and exposed to client side",
+    "keymaps": {
+        "evalAll": {"enabled": true, "key": "ctrl+shift+enter"},
+        "toggleEditor": {"enabled": true, "key": "ctrl+shift+h"},
+        "toggleComment": {"enabled": true, "key": "ctrl+/"},
+        "evalLine": {"enabled": true, "key": "shift+enter"},
+        "evalBlock": {"enabled": true, "key": "alt+enter"}
+    },
+    "menu": {
+        "shareMessage": "Pressing OK will share this sketch to \nhttps://twitter.com/hydra_patterns.\n\nInclude your name or twitter handle (optional):"
+    }
+}
+},{}],4:[function(require,module,exports){
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
@@ -322,7 +377,7 @@ window.onkeydown = e => {
   });
 });
 
-},{"../../lib/codemirror":6}],3:[function(require,module,exports){
+},{"../../lib/codemirror":8}],5:[function(require,module,exports){
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
@@ -486,7 +541,7 @@ window.onkeydown = e => {
   }
 });
 
-},{"../../lib/codemirror":6}],4:[function(require,module,exports){
+},{"../../lib/codemirror":8}],6:[function(require,module,exports){
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
@@ -997,7 +1052,7 @@ window.onkeydown = e => {
   CodeMirror.defineOption("hintOptions", null);
 });
 
-},{"../../lib/codemirror":6}],5:[function(require,module,exports){
+},{"../../lib/codemirror":8}],7:[function(require,module,exports){
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
@@ -1118,7 +1173,7 @@ window.onkeydown = e => {
   }
 });
 
-},{"../../lib/codemirror":6}],6:[function(require,module,exports){
+},{"../../lib/codemirror":8}],8:[function(require,module,exports){
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
@@ -10921,7 +10976,7 @@ window.onkeydown = e => {
 
 })));
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
@@ -11866,7 +11921,598 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 });
 
-},{"../../lib/codemirror":6}],8:[function(require,module,exports){
+},{"../../lib/codemirror":8}],10:[function(require,module,exports){
+/*!
+ * hotkeys-js v3.8.3
+ * A simple micro-library for defining and dispatching keyboard shortcuts. It has no dependencies.
+ * 
+ * Copyright (c) 2021 kenny wong <wowohoo@qq.com>
+ * http://jaywcjlove.github.io/hotkeys
+ * 
+ * Licensed under the MIT license.
+ */
+
+'use strict';
+
+var isff = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase().indexOf('firefox') > 0 : false; // 绑定事件
+
+function addEvent(object, event, method) {
+  if (object.addEventListener) {
+    object.addEventListener(event, method, false);
+  } else if (object.attachEvent) {
+    object.attachEvent("on".concat(event), function () {
+      method(window.event);
+    });
+  }
+} // 修饰键转换成对应的键码
+
+
+function getMods(modifier, key) {
+  var mods = key.slice(0, key.length - 1);
+
+  for (var i = 0; i < mods.length; i++) {
+    mods[i] = modifier[mods[i].toLowerCase()];
+  }
+
+  return mods;
+} // 处理传的key字符串转换成数组
+
+
+function getKeys(key) {
+  if (typeof key !== 'string') key = '';
+  key = key.replace(/\s/g, ''); // 匹配任何空白字符,包括空格、制表符、换页符等等
+
+  var keys = key.split(','); // 同时设置多个快捷键，以','分割
+
+  var index = keys.lastIndexOf(''); // 快捷键可能包含','，需特殊处理
+
+  for (; index >= 0;) {
+    keys[index - 1] += ',';
+    keys.splice(index, 1);
+    index = keys.lastIndexOf('');
+  }
+
+  return keys;
+} // 比较修饰键的数组
+
+
+function compareArray(a1, a2) {
+  var arr1 = a1.length >= a2.length ? a1 : a2;
+  var arr2 = a1.length >= a2.length ? a2 : a1;
+  var isIndex = true;
+
+  for (var i = 0; i < arr1.length; i++) {
+    if (arr2.indexOf(arr1[i]) === -1) isIndex = false;
+  }
+
+  return isIndex;
+}
+
+var _keyMap = {
+  backspace: 8,
+  tab: 9,
+  clear: 12,
+  enter: 13,
+  "return": 13,
+  esc: 27,
+  escape: 27,
+  space: 32,
+  left: 37,
+  up: 38,
+  right: 39,
+  down: 40,
+  del: 46,
+  "delete": 46,
+  ins: 45,
+  insert: 45,
+  home: 36,
+  end: 35,
+  pageup: 33,
+  pagedown: 34,
+  capslock: 20,
+  num_0: 96,
+  num_1: 97,
+  num_2: 98,
+  num_3: 99,
+  num_4: 100,
+  num_5: 101,
+  num_6: 102,
+  num_7: 103,
+  num_8: 104,
+  num_9: 105,
+  num_multiply: 106,
+  num_add: 107,
+  num_enter: 108,
+  num_subtract: 109,
+  num_decimal: 110,
+  num_divide: 111,
+  '⇪': 20,
+  ',': 188,
+  '.': 190,
+  '/': 191,
+  '`': 192,
+  '-': isff ? 173 : 189,
+  '=': isff ? 61 : 187,
+  ';': isff ? 59 : 186,
+  '\'': 222,
+  '[': 219,
+  ']': 221,
+  '\\': 220
+}; // Modifier Keys
+
+var _modifier = {
+  // shiftKey
+  '⇧': 16,
+  shift: 16,
+  // altKey
+  '⌥': 18,
+  alt: 18,
+  option: 18,
+  // ctrlKey
+  '⌃': 17,
+  ctrl: 17,
+  control: 17,
+  // metaKey
+  '⌘': 91,
+  cmd: 91,
+  command: 91
+};
+var modifierMap = {
+  16: 'shiftKey',
+  18: 'altKey',
+  17: 'ctrlKey',
+  91: 'metaKey',
+  shiftKey: 16,
+  ctrlKey: 17,
+  altKey: 18,
+  metaKey: 91
+};
+var _mods = {
+  16: false,
+  18: false,
+  17: false,
+  91: false
+};
+var _handlers = {}; // F1~F12 special key
+
+for (var k = 1; k < 20; k++) {
+  _keyMap["f".concat(k)] = 111 + k;
+}
+
+var _downKeys = []; // 记录摁下的绑定键
+
+var _scope = 'all'; // 默认热键范围
+
+var elementHasBindEvent = []; // 已绑定事件的节点记录
+// 返回键码
+
+var code = function code(x) {
+  return _keyMap[x.toLowerCase()] || _modifier[x.toLowerCase()] || x.toUpperCase().charCodeAt(0);
+}; // 设置获取当前范围（默认为'所有'）
+
+
+function setScope(scope) {
+  _scope = scope || 'all';
+} // 获取当前范围
+
+
+function getScope() {
+  return _scope || 'all';
+} // 获取摁下绑定键的键值
+
+
+function getPressedKeyCodes() {
+  return _downKeys.slice(0);
+} // 表单控件控件判断 返回 Boolean
+// hotkey is effective only when filter return true
+
+
+function filter(event) {
+  var target = event.target || event.srcElement;
+  var tagName = target.tagName;
+  var flag = true; // ignore: isContentEditable === 'true', <input> and <textarea> when readOnly state is false, <select>
+
+  if (target.isContentEditable || (tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT') && !target.readOnly) {
+    flag = false;
+  }
+
+  return flag;
+} // 判断摁下的键是否为某个键，返回true或者false
+
+
+function isPressed(keyCode) {
+  if (typeof keyCode === 'string') {
+    keyCode = code(keyCode); // 转换成键码
+  }
+
+  return _downKeys.indexOf(keyCode) !== -1;
+} // 循环删除handlers中的所有 scope(范围)
+
+
+function deleteScope(scope, newScope) {
+  var handlers;
+  var i; // 没有指定scope，获取scope
+
+  if (!scope) scope = getScope();
+
+  for (var key in _handlers) {
+    if (Object.prototype.hasOwnProperty.call(_handlers, key)) {
+      handlers = _handlers[key];
+
+      for (i = 0; i < handlers.length;) {
+        if (handlers[i].scope === scope) handlers.splice(i, 1);else i++;
+      }
+    }
+  } // 如果scope被删除，将scope重置为all
+
+
+  if (getScope() === scope) setScope(newScope || 'all');
+} // 清除修饰键
+
+
+function clearModifier(event) {
+  var key = event.keyCode || event.which || event.charCode;
+
+  var i = _downKeys.indexOf(key); // 从列表中清除按压过的键
+
+
+  if (i >= 0) {
+    _downKeys.splice(i, 1);
+  } // 特殊处理 cmmand 键，在 cmmand 组合快捷键 keyup 只执行一次的问题
+
+
+  if (event.key && event.key.toLowerCase() === 'meta') {
+    _downKeys.splice(0, _downKeys.length);
+  } // 修饰键 shiftKey altKey ctrlKey (command||metaKey) 清除
+
+
+  if (key === 93 || key === 224) key = 91;
+
+  if (key in _mods) {
+    _mods[key] = false; // 将修饰键重置为false
+
+    for (var k in _modifier) {
+      if (_modifier[k] === key) hotkeys[k] = false;
+    }
+  }
+}
+
+function unbind(keysInfo) {
+  // unbind(), unbind all keys
+  if (!keysInfo) {
+    Object.keys(_handlers).forEach(function (key) {
+      return delete _handlers[key];
+    });
+  } else if (Array.isArray(keysInfo)) {
+    // support like : unbind([{key: 'ctrl+a', scope: 's1'}, {key: 'ctrl-a', scope: 's2', splitKey: '-'}])
+    keysInfo.forEach(function (info) {
+      if (info.key) eachUnbind(info);
+    });
+  } else if (typeof keysInfo === 'object') {
+    // support like unbind({key: 'ctrl+a, ctrl+b', scope:'abc'})
+    if (keysInfo.key) eachUnbind(keysInfo);
+  } else if (typeof keysInfo === 'string') {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    // support old method
+    // eslint-disable-line
+    var scope = args[0],
+        method = args[1];
+
+    if (typeof scope === 'function') {
+      method = scope;
+      scope = '';
+    }
+
+    eachUnbind({
+      key: keysInfo,
+      scope: scope,
+      method: method,
+      splitKey: '+'
+    });
+  }
+} // 解除绑定某个范围的快捷键
+
+
+var eachUnbind = function eachUnbind(_ref) {
+  var key = _ref.key,
+      scope = _ref.scope,
+      method = _ref.method,
+      _ref$splitKey = _ref.splitKey,
+      splitKey = _ref$splitKey === void 0 ? '+' : _ref$splitKey;
+  var multipleKeys = getKeys(key);
+  multipleKeys.forEach(function (originKey) {
+    var unbindKeys = originKey.split(splitKey);
+    var len = unbindKeys.length;
+    var lastKey = unbindKeys[len - 1];
+    var keyCode = lastKey === '*' ? '*' : code(lastKey);
+    if (!_handlers[keyCode]) return; // 判断是否传入范围，没有就获取范围
+
+    if (!scope) scope = getScope();
+    var mods = len > 1 ? getMods(_modifier, unbindKeys) : [];
+    _handlers[keyCode] = _handlers[keyCode].map(function (record) {
+      // 通过函数判断，是否解除绑定，函数相等直接返回
+      var isMatchingMethod = method ? record.method === method : true;
+
+      if (isMatchingMethod && record.scope === scope && compareArray(record.mods, mods)) {
+        return {};
+      }
+
+      return record;
+    });
+  });
+}; // 对监听对应快捷键的回调函数进行处理
+
+
+function eventHandler(event, handler, scope) {
+  var modifiersMatch; // 看它是否在当前范围
+
+  if (handler.scope === scope || handler.scope === 'all') {
+    // 检查是否匹配修饰符（如果有返回true）
+    modifiersMatch = handler.mods.length > 0;
+
+    for (var y in _mods) {
+      if (Object.prototype.hasOwnProperty.call(_mods, y)) {
+        if (!_mods[y] && handler.mods.indexOf(+y) > -1 || _mods[y] && handler.mods.indexOf(+y) === -1) {
+          modifiersMatch = false;
+        }
+      }
+    } // 调用处理程序，如果是修饰键不做处理
+
+
+    if (handler.mods.length === 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91] || modifiersMatch || handler.shortcut === '*') {
+      if (handler.method(event, handler) === false) {
+        if (event.preventDefault) event.preventDefault();else event.returnValue = false;
+        if (event.stopPropagation) event.stopPropagation();
+        if (event.cancelBubble) event.cancelBubble = true;
+      }
+    }
+  }
+} // 处理keydown事件
+
+
+function dispatch(event) {
+  var asterisk = _handlers['*'];
+  var key = event.keyCode || event.which || event.charCode; // 表单控件过滤 默认表单控件不触发快捷键
+
+  if (!hotkeys.filter.call(this, event)) return; // Gecko(Firefox)的command键值224，在Webkit(Chrome)中保持一致
+  // Webkit左右 command 键值不一样
+
+  if (key === 93 || key === 224) key = 91;
+  /**
+   * Collect bound keys
+   * If an Input Method Editor is processing key input and the event is keydown, return 229.
+   * https://stackoverflow.com/questions/25043934/is-it-ok-to-ignore-keydown-events-with-keycode-229
+   * http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html
+   */
+
+  if (_downKeys.indexOf(key) === -1 && key !== 229) _downKeys.push(key);
+  /**
+   * Jest test cases are required.
+   * ===============================
+   */
+
+  ['ctrlKey', 'altKey', 'shiftKey', 'metaKey'].forEach(function (keyName) {
+    var keyNum = modifierMap[keyName];
+
+    if (event[keyName] && _downKeys.indexOf(keyNum) === -1) {
+      _downKeys.push(keyNum);
+    } else if (!event[keyName] && _downKeys.indexOf(keyNum) > -1) {
+      _downKeys.splice(_downKeys.indexOf(keyNum), 1);
+    } else if (keyName === 'metaKey' && event[keyName] && _downKeys.length === 3) {
+      /**
+       * Fix if Command is pressed:
+       * ===============================
+       */
+      if (!(event.ctrlKey || event.shiftKey || event.altKey)) {
+        _downKeys = _downKeys.slice(_downKeys.indexOf(keyNum));
+      }
+    }
+  });
+  /**
+   * -------------------------------
+   */
+
+  if (key in _mods) {
+    _mods[key] = true; // 将特殊字符的key注册到 hotkeys 上
+
+    for (var k in _modifier) {
+      if (_modifier[k] === key) hotkeys[k] = true;
+    }
+
+    if (!asterisk) return;
+  } // 将 modifierMap 里面的修饰键绑定到 event 中
+
+
+  for (var e in _mods) {
+    if (Object.prototype.hasOwnProperty.call(_mods, e)) {
+      _mods[e] = event[modifierMap[e]];
+    }
+  }
+  /**
+   * https://github.com/jaywcjlove/hotkeys/pull/129
+   * This solves the issue in Firefox on Windows where hotkeys corresponding to special characters would not trigger.
+   * An example of this is ctrl+alt+m on a Swedish keyboard which is used to type μ.
+   * Browser support: https://caniuse.com/#feat=keyboardevent-getmodifierstate
+   */
+
+
+  if (event.getModifierState && !(event.altKey && !event.ctrlKey) && event.getModifierState('AltGraph')) {
+    if (_downKeys.indexOf(17) === -1) {
+      _downKeys.push(17);
+    }
+
+    if (_downKeys.indexOf(18) === -1) {
+      _downKeys.push(18);
+    }
+
+    _mods[17] = true;
+    _mods[18] = true;
+  } // 获取范围 默认为 `all`
+
+
+  var scope = getScope(); // 对任何快捷键都需要做的处理
+
+  if (asterisk) {
+    for (var i = 0; i < asterisk.length; i++) {
+      if (asterisk[i].scope === scope && (event.type === 'keydown' && asterisk[i].keydown || event.type === 'keyup' && asterisk[i].keyup)) {
+        eventHandler(event, asterisk[i], scope);
+      }
+    }
+  } // key 不在 _handlers 中返回
+
+
+  if (!(key in _handlers)) return;
+
+  for (var _i = 0; _i < _handlers[key].length; _i++) {
+    if (event.type === 'keydown' && _handlers[key][_i].keydown || event.type === 'keyup' && _handlers[key][_i].keyup) {
+      if (_handlers[key][_i].key) {
+        var record = _handlers[key][_i];
+        var splitKey = record.splitKey;
+        var keyShortcut = record.key.split(splitKey);
+        var _downKeysCurrent = []; // 记录当前按键键值
+
+        for (var a = 0; a < keyShortcut.length; a++) {
+          _downKeysCurrent.push(code(keyShortcut[a]));
+        }
+
+        if (_downKeysCurrent.sort().join('') === _downKeys.sort().join('')) {
+          // 找到处理内容
+          eventHandler(event, record, scope);
+        }
+      }
+    }
+  }
+} // 判断 element 是否已经绑定事件
+
+
+function isElementBind(element) {
+  return elementHasBindEvent.indexOf(element) > -1;
+}
+
+function hotkeys(key, option, method) {
+  _downKeys = [];
+  var keys = getKeys(key); // 需要处理的快捷键列表
+
+  var mods = [];
+  var scope = 'all'; // scope默认为all，所有范围都有效
+
+  var element = document; // 快捷键事件绑定节点
+
+  var i = 0;
+  var keyup = false;
+  var keydown = true;
+  var splitKey = '+'; // 对为设定范围的判断
+
+  if (method === undefined && typeof option === 'function') {
+    method = option;
+  }
+
+  if (Object.prototype.toString.call(option) === '[object Object]') {
+    if (option.scope) scope = option.scope; // eslint-disable-line
+
+    if (option.element) element = option.element; // eslint-disable-line
+
+    if (option.keyup) keyup = option.keyup; // eslint-disable-line
+
+    if (option.keydown !== undefined) keydown = option.keydown; // eslint-disable-line
+
+    if (typeof option.splitKey === 'string') splitKey = option.splitKey; // eslint-disable-line
+  }
+
+  if (typeof option === 'string') scope = option; // 对于每个快捷键进行处理
+
+  for (; i < keys.length; i++) {
+    key = keys[i].split(splitKey); // 按键列表
+
+    mods = []; // 如果是组合快捷键取得组合快捷键
+
+    if (key.length > 1) mods = getMods(_modifier, key); // 将非修饰键转化为键码
+
+    key = key[key.length - 1];
+    key = key === '*' ? '*' : code(key); // *表示匹配所有快捷键
+    // 判断key是否在_handlers中，不在就赋一个空数组
+
+    if (!(key in _handlers)) _handlers[key] = [];
+
+    _handlers[key].push({
+      keyup: keyup,
+      keydown: keydown,
+      scope: scope,
+      mods: mods,
+      shortcut: keys[i],
+      method: method,
+      key: keys[i],
+      splitKey: splitKey
+    });
+  } // 在全局document上设置快捷键
+
+
+  if (typeof element !== 'undefined' && !isElementBind(element) && window) {
+    elementHasBindEvent.push(element);
+    addEvent(element, 'keydown', function (e) {
+      dispatch(e);
+    });
+    addEvent(window, 'focus', function () {
+      _downKeys = [];
+    });
+    addEvent(element, 'keyup', function (e) {
+      dispatch(e);
+      clearModifier(e);
+    });
+  }
+}
+
+var _api = {
+  setScope: setScope,
+  getScope: getScope,
+  deleteScope: deleteScope,
+  getPressedKeyCodes: getPressedKeyCodes,
+  isPressed: isPressed,
+  filter: filter,
+  unbind: unbind
+};
+
+for (var a in _api) {
+  if (Object.prototype.hasOwnProperty.call(_api, a)) {
+    hotkeys[a] = _api[a];
+  }
+}
+
+if (typeof window !== 'undefined') {
+  var _hotkeys = window.hotkeys;
+
+  hotkeys.noConflict = function (deep) {
+    if (deep && window.hotkeys === hotkeys) {
+      window.hotkeys = _hotkeys;
+    }
+
+    return hotkeys;
+  };
+
+  window.hotkeys = hotkeys;
+}
+
+module.exports = hotkeys;
+
+},{}],11:[function(require,module,exports){
+/*! hotkeys-js v3.8.3 | MIT (c) 2021 kenny wong <wowohoo@qq.com> | http://jaywcjlove.github.io/hotkeys */
+"use strict";var isff="undefined"!=typeof navigator&&0<navigator.userAgent.toLowerCase().indexOf("firefox");function addEvent(e,n,t){e.addEventListener?e.addEventListener(n,t,!1):e.attachEvent&&e.attachEvent("on".concat(n),function(){t(window.event)})}function getMods(e,n){for(var t=n.slice(0,n.length-1),o=0;o<t.length;o++)t[o]=e[t[o].toLowerCase()];return t}function getKeys(e){"string"!=typeof e&&(e="");for(var n=(e=e.replace(/\s/g,"")).split(","),t=n.lastIndexOf("");0<=t;)n[t-1]+=",",n.splice(t,1),t=n.lastIndexOf("");return n}function compareArray(e,n){for(var t=e.length<n.length?n:e,o=e.length<n.length?e:n,s=!0,r=0;r<t.length;r++)~o.indexOf(t[r])||(s=!1);return s}for(var _keyMap={backspace:8,tab:9,clear:12,enter:13,return:13,esc:27,escape:27,space:32,left:37,up:38,right:39,down:40,del:46,delete:46,ins:45,insert:45,home:36,end:35,pageup:33,pagedown:34,capslock:20,num_0:96,num_1:97,num_2:98,num_3:99,num_4:100,num_5:101,num_6:102,num_7:103,num_8:104,num_9:105,num_multiply:106,num_add:107,num_enter:108,num_subtract:109,num_decimal:110,num_divide:111,"\u21ea":20,",":188,".":190,"/":191,"`":192,"-":isff?173:189,"=":isff?61:187,";":isff?59:186,"'":222,"[":219,"]":221,"\\":220},_modifier={"\u21e7":16,shift:16,"\u2325":18,alt:18,option:18,"\u2303":17,ctrl:17,control:17,"\u2318":91,cmd:91,command:91},modifierMap={16:"shiftKey",18:"altKey",17:"ctrlKey",91:"metaKey",shiftKey:16,ctrlKey:17,altKey:18,metaKey:91},_mods={16:!1,18:!1,17:!1,91:!1},_handlers={},k=1;k<20;k++)_keyMap["f".concat(k)]=111+k;var _downKeys=[],_scope="all",elementHasBindEvent=[],code=function(e){return _keyMap[e.toLowerCase()]||_modifier[e.toLowerCase()]||e.toUpperCase().charCodeAt(0)};function setScope(e){_scope=e||"all"}function getScope(){return _scope||"all"}function getPressedKeyCodes(){return _downKeys.slice(0)}function filter(e){var n=e.target||e.srcElement,t=n.tagName,o=!0;return!n.isContentEditable&&("INPUT"!==t&&"TEXTAREA"!==t&&"SELECT"!==t||n.readOnly)||(o=!1),o}function isPressed(e){return"string"==typeof e&&(e=code(e)),!!~_downKeys.indexOf(e)}function deleteScope(e,n){var t,o;for(var s in e=e||getScope(),_handlers)if(Object.prototype.hasOwnProperty.call(_handlers,s))for(t=_handlers[s],o=0;o<t.length;)t[o].scope===e?t.splice(o,1):o++;getScope()===e&&setScope(n||"all")}function clearModifier(e){var n=e.keyCode||e.which||e.charCode,t=_downKeys.indexOf(n);if(t<0||_downKeys.splice(t,1),e.key&&"meta"==e.key.toLowerCase()&&_downKeys.splice(0,_downKeys.length),93!==n&&224!==n||(n=91),n in _mods)for(var o in _mods[n]=!1,_modifier)_modifier[o]===n&&(hotkeys[o]=!1)}function unbind(e){if(e){if(Array.isArray(e))e.forEach(function(e){e.key&&eachUnbind(e)});else if("object"==typeof e)e.key&&eachUnbind(e);else if("string"==typeof e){for(var n=arguments.length,t=Array(1<n?n-1:0),o=1;o<n;o++)t[o-1]=arguments[o];var s=t[0],r=t[1];"function"==typeof s&&(r=s,s=""),eachUnbind({key:e,scope:s,method:r,splitKey:"+"})}}else Object.keys(_handlers).forEach(function(e){return delete _handlers[e]})}var eachUnbind=function(e){var d=e.scope,i=e.method,n=e.splitKey,a=void 0===n?"+":n;getKeys(e.key).forEach(function(e){var n=e.split(a),t=n.length,o=n[t-1],s="*"===o?"*":code(o);if(_handlers[s]){d=d||getScope();var r=1<t?getMods(_modifier,n):[];_handlers[s]=_handlers[s].map(function(e){return i&&e.method!==i||e.scope!==d||!compareArray(e.mods,r)?e:{}})}})};function eventHandler(e,n,t){var o;if(n.scope===t||"all"===n.scope){for(var s in o=0<n.mods.length,_mods)Object.prototype.hasOwnProperty.call(_mods,s)&&(!_mods[s]&&~n.mods.indexOf(+s)||_mods[s]&&!~n.mods.indexOf(+s))&&(o=!1);(0!==n.mods.length||_mods[16]||_mods[18]||_mods[17]||_mods[91])&&!o&&"*"!==n.shortcut||!1===n.method(e,n)&&(e.preventDefault?e.preventDefault():e.returnValue=!1,e.stopPropagation&&e.stopPropagation(),e.cancelBubble&&(e.cancelBubble=!0))}}function dispatch(t){var e=_handlers["*"],n=t.keyCode||t.which||t.charCode;if(hotkeys.filter.call(this,t)){if(93!==n&&224!==n||(n=91),~_downKeys.indexOf(n)||229===n||_downKeys.push(n),["ctrlKey","altKey","shiftKey","metaKey"].forEach(function(e){var n=modifierMap[e];t[e]&&!~_downKeys.indexOf(n)?_downKeys.push(n):!t[e]&&~_downKeys.indexOf(n)?_downKeys.splice(_downKeys.indexOf(n),1):"metaKey"===e&&t[e]&&3===_downKeys.length&&(t.ctrlKey||t.shiftKey||t.altKey||(_downKeys=_downKeys.slice(_downKeys.indexOf(n))))}),n in _mods){for(var o in _mods[n]=!0,_modifier)_modifier[o]===n&&(hotkeys[o]=!0);if(!e)return}for(var s in _mods)Object.prototype.hasOwnProperty.call(_mods,s)&&(_mods[s]=t[modifierMap[s]]);t.getModifierState&&(!t.altKey||t.ctrlKey)&&t.getModifierState("AltGraph")&&(~_downKeys.indexOf(17)||_downKeys.push(17),~_downKeys.indexOf(18)||_downKeys.push(18),_mods[17]=!0,_mods[18]=!0);var r=getScope();if(e)for(var d=0;d<e.length;d++)e[d].scope===r&&("keydown"===t.type&&e[d].keydown||"keyup"===t.type&&e[d].keyup)&&eventHandler(t,e[d],r);if(n in _handlers)for(var i=0;i<_handlers[n].length;i++)if(("keydown"===t.type&&_handlers[n][i].keydown||"keyup"===t.type&&_handlers[n][i].keyup)&&_handlers[n][i].key){for(var a=_handlers[n][i],c=a.key.split(a.splitKey),l=[],f=0;f<c.length;f++)l.push(code(c[f]));l.sort().join("")===_downKeys.sort().join("")&&eventHandler(t,a,r)}}}function isElementBind(e){return!!~elementHasBindEvent.indexOf(e)}function hotkeys(e,n,t){_downKeys=[];var o=getKeys(e),s=[],r="all",d=document,i=0,a=!1,c=!0,l="+";for(void 0===t&&"function"==typeof n&&(t=n),"[object Object]"===Object.prototype.toString.call(n)&&(n.scope&&(r=n.scope),n.element&&(d=n.element),n.keyup&&(a=n.keyup),void 0!==n.keydown&&(c=n.keydown),"string"==typeof n.splitKey&&(l=n.splitKey)),"string"==typeof n&&(r=n);i<o.length;i++)s=[],1<(e=o[i].split(l)).length&&(s=getMods(_modifier,e)),(e="*"===(e=e[e.length-1])?"*":code(e))in _handlers||(_handlers[e]=[]),_handlers[e].push({keyup:a,keydown:c,scope:r,mods:s,shortcut:o[i],method:t,key:o[i],splitKey:l});void 0!==d&&!isElementBind(d)&&window&&(elementHasBindEvent.push(d),addEvent(d,"keydown",function(e){dispatch(e)}),addEvent(window,"focus",function(){_downKeys=[]}),addEvent(d,"keyup",function(e){dispatch(e),clearModifier(e)}))}var _api={setScope:setScope,getScope:getScope,deleteScope:deleteScope,getPressedKeyCodes:getPressedKeyCodes,isPressed:isPressed,filter:filter,unbind:unbind};for(var a in _api)Object.prototype.hasOwnProperty.call(_api,a)&&(hotkeys[a]=_api[a]);if("undefined"!=typeof window){var _hotkeys=window.hotkeys;hotkeys.noConflict=function(e){return e&&window.hotkeys===hotkeys&&(window.hotkeys=_hotkeys),hotkeys},window.hotkeys=hotkeys}module.exports=hotkeys;
+},{}],12:[function(require,module,exports){
+(function (process){(function (){
+
+if (process.env.NODE_ENV === 'production') {
+  // eslint-disable-next-line global-require
+  module.exports = require('./dist/hotkeys.common.min.js');
+} else {
+  // eslint-disable-next-line global-require
+  module.exports = require('./dist/hotkeys.common.js');
+}
+
+}).call(this)}).call(this,require('_process'))
+},{"./dist/hotkeys.common.js":10,"./dist/hotkeys.common.min.js":11,"_process":40}],13:[function(require,module,exports){
 const Output = require('./src/output.js')
 const loop = require('raf-loop')
 const Source = require('./src/hydra-source.js')
@@ -12309,13 +12955,13 @@ class HydraRenderer {
 
 module.exports = HydraRenderer
 
-},{"./src/eval-sandbox.js":19,"./src/generator-factory.js":20,"./src/hydra-source.js":25,"./src/lib/array-utils.js":26,"./src/lib/audio.js":27,"./src/lib/video-recorder.js":31,"./src/output.js":33,"mouse-change":12,"raf-loop":15,"regl":17}],9:[function(require,module,exports){
+},{"./src/eval-sandbox.js":24,"./src/generator-factory.js":25,"./src/hydra-source.js":30,"./src/lib/array-utils.js":31,"./src/lib/audio.js":32,"./src/lib/video-recorder.js":36,"./src/output.js":38,"mouse-change":17,"raf-loop":20,"regl":22}],14:[function(require,module,exports){
 const Synth = require('./hydra-synth.js')
 //const ShaderGenerator = require('./shader-generator.js')
 
 module.exports = Synth
 
-},{"./hydra-synth.js":8}],10:[function(require,module,exports){
+},{"./hydra-synth.js":13}],15:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -12344,7 +12990,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],11:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -15806,7 +16452,7 @@ function hamming(size) {
 /******/ });
 });
 
-},{}],12:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -16013,7 +16659,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":13}],13:[function(require,module,exports){
+},{"mouse-event":18}],18:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -16075,7 +16721,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],14:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function (process){(function (){
 // Generated by CoffeeScript 1.12.2
 (function() {
@@ -16115,7 +16761,7 @@ exports.y = mouseRelativeY
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":35}],15:[function(require,module,exports){
+},{"_process":40}],20:[function(require,module,exports){
 var inherits = require('inherits')
 var EventEmitter = require('events').EventEmitter
 var now = require('right-now')
@@ -16160,7 +16806,7 @@ Engine.prototype.tick = function() {
     this.emit('tick', dt)
     this.last = time
 }
-},{"events":34,"inherits":10,"raf":16,"right-now":18}],16:[function(require,module,exports){
+},{"events":39,"inherits":15,"raf":21,"right-now":23}],21:[function(require,module,exports){
 (function (global){(function (){
 var now = require('performance-now')
   , root = typeof window === 'undefined' ? global : window
@@ -16239,7 +16885,7 @@ module.exports.polyfill = function(object) {
 }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"performance-now":14}],17:[function(require,module,exports){
+},{"performance-now":19}],22:[function(require,module,exports){
 (function(U,X){"object"===typeof exports&&"undefined"!==typeof module?module.exports=X():"function"===typeof define&&define.amd?define(X):U.createREGL=X()})(this,function(){function U(a,b){this.id=Eb++;this.type=a;this.data=b}function X(a){if(0===a.length)return[];var b=a.charAt(0),c=a.charAt(a.length-1);if(1<a.length&&b===c&&('"'===b||"'"===b))return['"'+a.substr(1,a.length-2).replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"'];if(b=/\[(false|true|null|\d+|'[^']*'|"[^"]*")\]/.exec(a))return X(a.substr(0,
 b.index)).concat(X(b[1])).concat(X(a.substr(b.index+b[0].length)));b=a.split(".");if(1===b.length)return['"'+a.replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"'];a=[];for(c=0;c<b.length;++c)a=a.concat(X(b[c]));return a}function cb(a){return"["+X(a).join("][")+"]"}function db(a,b){if("function"===typeof a)return new U(0,a);if("number"===typeof a||"boolean"===typeof a)return new U(5,a);if(Array.isArray(a))return new U(6,a.map(function(a,e){return db(a,b+"["+e+"]")}));if(a instanceof U)return a}function Fb(){var a=
 {"":0},b=[""];return{id:function(c){var e=a[c];if(e)return e;e=a[c]=b.length;b.push(c);return e},str:function(a){return b[a]}}}function Gb(a,b,c){function e(){var b=window.innerWidth,e=window.innerHeight;a!==document.body&&(e=a.getBoundingClientRect(),b=e.right-e.left,e=e.bottom-e.top);f.width=c*b;f.height=c*e;A(f.style,{width:b+"px",height:e+"px"})}var f=document.createElement("canvas");A(f.style,{border:0,margin:0,padding:0,top:0,left:0});a.appendChild(f);a===document.body&&(f.style.position="absolute",
@@ -16405,7 +17051,7 @@ H=Yb(l,m),O=Kb(l,r,a,function(a){return J.destroyBuffer(a)}),J=Sb(l,m,H,r,O),M=L
 vao:J.createVAO,attributes:h,frame:u,on:function(a,b){var c;switch(a){case "frame":return u(b);case "lost":c=S;break;case "restore":c=T;break;case "destroy":c=U}c.push(b);return{cancel:function(){for(var a=0;a<c.length;++a)if(c[a]===b){c[a]=c[c.length-1];c.pop();break}}}},limits:H,hasExtension:function(a){return 0<=H.extensions.indexOf(a.toLowerCase())},read:q,destroy:function(){C.length=0;e();N&&(N.removeEventListener("webglcontextlost",f),N.removeEventListener("webglcontextrestored",d));D.clear();
 V.clear();L.clear();y.clear();M.clear();O.clear();J.clear();z&&z.clear();U.forEach(function(a){a()})},_gl:l,_refresh:k,poll:function(){w();z&&z.update()},now:v,stats:r});a.onDone(null,h);return h}});
 
-},{}],18:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (global){(function (){
 module.exports =
   global.performance &&
@@ -16416,7 +17062,7 @@ module.exports =
   }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],19:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 // handles code evaluation and attaching relevant objects to global and evaluation contexts
 
 const Sandbox = require('./lib/sandbox.js')
@@ -16464,7 +17110,7 @@ class EvalSandbox {
 
 module.exports = EvalSandbox
 
-},{"./lib/array-utils.js":26,"./lib/sandbox.js":29}],20:[function(require,module,exports){
+},{"./lib/array-utils.js":31,"./lib/sandbox.js":34}],25:[function(require,module,exports){
 const glslTransforms = require('./glsl/glsl-functions.js')
 const GlslSource = require('./glsl-source.js')
 
@@ -16627,7 +17273,7 @@ function processGlsl(obj) {
 
 module.exports = GeneratorFactory
 
-},{"./glsl-source.js":21,"./glsl/glsl-functions.js":23}],21:[function(require,module,exports){
+},{"./glsl-source.js":26,"./glsl/glsl-functions.js":28}],26:[function(require,module,exports){
 const generateGlsl = require('./glsl-utils.js').generateGlsl
 const formatArguments = require('./glsl-utils.js').formatArguments
 
@@ -16743,7 +17389,7 @@ GlslSource.prototype.compile = function (transforms) {
 
 module.exports = GlslSource
 
-},{"./glsl-utils.js":22,"./glsl/utility-functions.js":24}],22:[function(require,module,exports){
+},{"./glsl-utils.js":27,"./glsl/utility-functions.js":29}],27:[function(require,module,exports){
 // converts a tree of javascript functions to a shader
 
 // Add extra functionality to Array.prototype for generating sequences in time
@@ -16975,7 +17621,7 @@ function formatArguments (transform, startIndex) {
   })
 }
 
-},{"./lib/array-utils.js":26}],23:[function(require,module,exports){
+},{"./lib/array-utils.js":31}],28:[function(require,module,exports){
 /*
 Format for adding functions to hydra. For each entry in this file, hydra automatically generates a glsl function and javascript function with the same name. You can also ass functions dynamically using setFunction(object).
 
@@ -18076,7 +18722,7 @@ module.exports = [
 }
 ]
 
-},{}],24:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 // functions that are only used within other functions
 
 module.exports = {
@@ -18189,7 +18835,7 @@ module.exports = {
   }
 }
 
-},{}],25:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 const Webcam = require('./lib/webcam.js')
 const Screen = require('./lib/screenmedia.js')
 
@@ -18325,7 +18971,7 @@ class HydraSource {
 
 module.exports = HydraSource
 
-},{"./lib/screenmedia.js":30,"./lib/webcam.js":32}],26:[function(require,module,exports){
+},{"./lib/screenmedia.js":35,"./lib/webcam.js":37}],31:[function(require,module,exports){
 // WIP utils for working with arrays
 // Possibly should be integrated with lfo extension, etc.
 // to do: transform time rather than array values, similar to working with coordinates in hydra
@@ -18401,7 +19047,7 @@ module.exports = {
   }
 }
 
-},{"./easing-functions.js":28}],27:[function(require,module,exports){
+},{"./easing-functions.js":33}],32:[function(require,module,exports){
 const Meyda = require('meyda')
 
 class Audio {
@@ -18618,7 +19264,7 @@ class Audio {
 
 module.exports = Audio
 
-},{"meyda":11}],28:[function(require,module,exports){
+},{"meyda":16}],33:[function(require,module,exports){
 // from https://gist.github.com/gre/1650294
 
 module.exports = {
@@ -18652,7 +19298,7 @@ module.exports = {
   sin: function (t) { return (1 + Math.sin(Math.PI*t-Math.PI/2))/2 }
 }
 
-},{}],29:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 // attempt custom evaluation sandbox for hydra functions
 // for now, just avoids polluting the global namespace
 // should probably be replaced with an abstract syntax tree
@@ -18689,7 +19335,7 @@ module.exports = (parent) => {
   }
 }
 
-},{}],30:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 
 module.exports = function (options) {
   return new Promise(function(resolve, reject) {
@@ -18705,7 +19351,7 @@ module.exports = function (options) {
   })
 }
 
-},{}],31:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 class VideoRecorder {
   constructor(stream) {
     this.mediaSource = new MediaSource()
@@ -18793,7 +19439,7 @@ class VideoRecorder {
 
 module.exports = VideoRecorder
 
-},{}],32:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 //const enumerateDevices = require('enumerate-devices')
 
 module.exports = function (deviceId) {
@@ -18822,7 +19468,7 @@ module.exports = function (deviceId) {
     .catch(console.log.bind(console))
 }
 
-},{}],33:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 //const transforms = require('./glsl-transforms.js')
 
 var Output = function ({ regl, precision, label = "", width, height}) {
@@ -18948,7 +19594,7 @@ Output.prototype.tick = function (props) {
 
 module.exports = Output
 
-},{}],34:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19473,7 +20119,7 @@ function functionBindPolyfill(context) {
   };
 }
 
-},{}],35:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

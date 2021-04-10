@@ -4,6 +4,7 @@
     "keymaps": {
         "evalAll": {"enabled": true, "key": "ctrl+shift+enter"},
         "toggleEditor": {"enabled": true, "key": "ctrl+shift+h"},
+        "toggleComment": {"enabled": true, "key": "ctrl+/"},
         "evalLine": {"enabled": true, "key": "shift+enter"},
         "evalBlock": {"enabled": true, "key": "alt+enter"}
     },
