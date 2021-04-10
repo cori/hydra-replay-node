@@ -1,0 +1,28 @@
+{
+  "name": "hydra-diy-editor",
+  "version": "0.0.1",
+  "description": "What am I about?",
+  "main": "index.html",
+  "scripts": {
+    "serve": "static-server -n index.html -p 8000 .",
+    "start": "npm run watch & npm run serve",
+    "watch": "watchify app/index.js -o bundle.js"
+  },
+  "dependencies": {
+    "static-server": "^3.0.0",
+    "watchify": "^3.11.1",
+    "codemirror": "5.60.0"
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/static-server"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "static"
+  ]
+}

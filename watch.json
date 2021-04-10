@@ -1,0 +1,9 @@
+{
+	"install": {
+		"include": ["^package\\.json$", "^\\.env$"]
+	},
+	"restart": {
+		"exclude": ["^app/"]
+	},
+	"throttle": 100
+}

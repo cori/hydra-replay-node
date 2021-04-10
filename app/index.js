@@ -1,3 +1,10 @@
+const CodeMirror = require('codemirror/lib/codemirror')
+require('codemirror/mode/javascript/javascript')
+require('codemirror/addon/hint/javascript-hint')
+require('codemirror/addon/hint/show-hint')
+require('codemirror/addon/selection/mark-selection')
+require('codemirror/addon/comment/comment')
+
 // hydra
 
 var canvas = document.createElement("CANVAS");
