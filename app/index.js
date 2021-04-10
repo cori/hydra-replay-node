@@ -14,29 +14,41 @@ const Hydra = require("hydra-synth");
 
 let codeRecorder, codePlayer;
 let keymaps;
+let firstTime = undefined;
 
 const defaultCode = `osc(50,0.1,1.5).out()`;
 
-window.playback = (fromTop) => {
+window.playback = fromTop => {
   if (codeRecorder === undefined) {
     return;
   }
   const records = codeRecorder.getRecords();
   const recordData = JSON.parse(records);
   console.log(recordData);
+
   if (recordData.length > 0) {
-    codePlayer.addOperations(records);
-    if(fromTop) {
-      codePlayer.seek(0);
+    let thisFirstTime;
+    if (Array.isArray(recordData[0].t)) {
+      thisFirstTime = recordData[0].t[0];
+    } else {
+      thisFirstTime = recordData[0].t;
     }
-    else {
-      if (Array.isArray(recordData[0].t)) {
-        codePlayer.seek(recordData[0].t[0]);
-      } else {
-        codePlayer.seek(recordData[0].t);
-      }
+    if (firstTime === undefined) {
+      firstTime = thisFirstTime;
+    }
+
+    codePlayer.addOperations(records);
+    if (fromTop) {
+      codePlayer.seek(firstTime);
+    } else {
+      codePlayer.seek(thisFirstTime);
     }
     codePlayer.play();
+  } else {
+    if (fromTop && firstTime !== undefined) {
+      codePlayer.seek(firstTime);
+      codePlayer.play();
+    }
   }
 };
 
@@ -56,9 +68,9 @@ window.playback = (fromTop) => {
   cm.refresh();
   cm.setValue(defaultCode);
 
-  const keyHandler = ({key, name}) => {
-    codeRecorder.recordExtraActivity({key, name})
-  }
+  const keyHandler = ({ key, name }) => {
+    codeRecorder.recordExtraActivity({ key, name });
+  };
   keymaps = new Keymaps({ cm, handler: keyHandler });
 
   codeRecorder = new CodeRecord(cm);
@@ -116,7 +128,7 @@ window.playback = (fromTop) => {
     speed: 2,
     extraActivityHandler: activity => {
       console.log(activity);
-      keymaps.exec(cm, activity.name)
+      keymaps.exec(cm, activity.name);
     },
     extraActivityReverter: activityRecorded => {
       console.log(activityRecorded);
