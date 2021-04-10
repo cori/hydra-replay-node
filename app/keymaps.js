@@ -45,32 +45,26 @@ const getCurrentBlock = function(cm) {
 
 const commands = {
   evalAll: ({ e, cm }) => {
-    e.preventDefault();
     const code = cm.getValue();
     flashCode(cm);
     eval(code);
   },
   toggleEditor: ({ e, cm }) => {
-    e.preventDefault();
     const editors = document.getElementById("editors");
-    if(editors.style.visibility == "hidden") {
+    if (editors.style.visibility == "hidden") {
       editors.style.visibility = "visible";
-    }
-    else {
+    } else {
       editors.style.visibility = "hidden";
     }
   },
   evalLine: ({ e, cm }) => {
-    e.preventDefault();
     const code = getLine(cm);
     eval(code);
   },
   toggleComment: ({ e, cm }) => {
-    e.preventDefault();
     cm.toggleComment();
   },
   evalBlock: ({ e, cm }) => {
-    e.preventDefault();
     const code = getCurrentBlock(cm);
     console.log(code);
     eval(code);
@@ -79,6 +73,7 @@ const commands = {
 
 class Keymaps {
   constructor({ cm, handler }) {
+    this.cm = cm;
     // enable capturing in text area
     hotkeys.filter = function(event) {
       return true;
@@ -88,11 +83,17 @@ class Keymaps {
     for (const commandName of commandNames) {
       const hk = mapping[commandName];
       if (hk.enabled && typeof commands[commandName] === "function") {
-        hotkeys(hk.key, function(e, handler) {
+        hotkeys(hk.key, function(e, hotkeyHandler) {
+          e.preventDefault();
           commands[commandName]({ e, cm });
-          hotkeyHandler({key: hk.key, name: commandName})
+          handler({ key: hk.key, name: commandName });
         });
       }
+    }
+  }
+  exec(cm, name) {
+    if (commands[name] !== undefined) {
+      commands[name]({ cm });
     }
   }
 }

@@ -31,6 +31,7 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="/style.css" />
+    <script src="/bundle.js" defer></script>
   </head>
   <body>
     <div id="canvas-container"></div>
@@ -39,10 +40,14 @@
       <div id="editor-container" class="container"></div>
       <div id="player-container" class="container"></div>
     </div>
-    
-    <button onclick="playback()">
-      play
-    </button>
-    <script src="/bundle.js"></script>
+
+    <div id="buttons">
+      <button onclick="playback(false)">
+        play
+      </button>
+      <button onclick="playback(true)">
+        play from top
+      </button>
+    </div>
   </body>
 </html>
