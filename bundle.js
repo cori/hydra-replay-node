@@ -15,21 +15,26 @@ const Hydra = require("hydra-synth");
 
 let codeRecorder, codePlayer;
 
-const defaultCode = 
-  `osc(50,0.1,1.5).out()`;
+const defaultCode = `osc(50,0.1,1.5).out()`;
 
 window.playback = () => {
   if (codeRecorder === undefined) {
     return;
   }
   const records = codeRecorder.getRecords();
-  console.log(records);
-  if (records.length > 0) {
+  const recordData = JSON.parse(records);
+  console.log(recordData);
+  if (recordData.length > 0) {
     codePlayer.addOperations(records);
-    codePlayer.seek(records[0].t)
+    if (Array.isArray(recordData[0].t)) {
+      codePlayer.seek(recordData[0].t[0]);
+    } else {
+      codePlayer.seek(recordData[0].t);
+    }
+
     codePlayer.play();
   }
-}
+};
 
 {
   const container = document.querySelector("#editor-container");
