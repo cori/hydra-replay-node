@@ -7,9 +7,12 @@
 
     <title>Hydra DIY Editor</title>
 
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet"> 
-    
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- import the webpage's stylesheet -->
     <link
       rel="stylesheet"
@@ -28,50 +31,14 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="/style.css" />
-
-    <!-- import the webpage's javascript file -->
-<!--     <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/codemirror.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/mode/javascript/javascript.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/hint/javascript-hint.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/hint/show-hint.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/selection/mark-selection.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/comment/comment.min.js"
-      crossorigin="anonymous"
-    ></script> -->
-    <script src="https://unpkg.com/hydra-synth"></script>
   </head>
   <body>
-    <div id="canvas-container">
-    </div>
+    <div id="canvas-container"></div>
 
     <div id="editors">
-<!--     <h1>Hydra DIY Editor</h1>
-    <p>
-      ctrl+enter to evaluate; remix of 
-      <a href="https://hydra.ojack.xyz">Hydra</a>
-    </p> -->
-    <div id="editor-container" class="container">
-      
-    </div>
+      <div id="editor-container" class="container"></div>
+      <div id="player-container" class="container"></div>
     </div>
     <script src="/bundle.js"></script>
-    <div class="glitchButton" style="position:fixed;top:20px;right:20px;z-index:3"></div>
-    <script src="https://button.glitch.me/button.js"></script>
   </body>
 </html>

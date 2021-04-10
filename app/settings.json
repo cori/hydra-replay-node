@@ -1,0 +1,13 @@
+{
+    "comment1": "do not include sensitive info such as api keys and passwords",
+    "comment2": "because this file will be bundled and exposed to client side",
+    "keymaps": {
+        "evalAll": {"enabled": true, "key": "ctrl+shift+enter"},
+        "toggleEditor": {"enabled": true, "key": "ctrl+shift+h"},
+        "evalLine": {"enabled": true, "key": "shift+enter"},
+        "evalBlock": {"enabled": true, "key": "alt+enter"}
+    },
+    "menu": {
+        "shareMessage": "Pressing OK will share this sketch to \nhttps://twitter.com/hydra_patterns.\n\nInclude your name or twitter handle (optional):"
+    }
+}
