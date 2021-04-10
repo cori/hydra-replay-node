@@ -13,7 +13,23 @@ const Keymaps = require("./keymaps.js");
 // hydra
 const Hydra = require("hydra-synth");
 
-let codePlayer;
+let codeRecorder, codePlayer;
+
+const defaultCode = 
+  `osc(50,0.1,1.5).out()`;
+
+window.playback = () => {
+  if (codeRecorder === undefined) {
+    return;
+  }
+  const records = codeRecorder.getRecords();
+  console.log(records);
+  if (records.length > 0) {
+    codePlayer.addOperations(records);
+    codePlayer.seek(records[0].t)
+    codePlayer.play();
+  }
+}
 
 {
   const container = document.querySelector("#editor-container");
@@ -29,26 +45,23 @@ let codePlayer;
     styleSelectedText: true
   });
   cm.refresh();
-  cm.setValue(
-    `osc(50,0.1,1.5).rotate(()=>mouse.y/100).modulate(noise(3),()=>mouse.x/window.innerWidth/4).out()`
-  );
+  cm.setValue(defaultCode);
 
   new Keymaps({ cm });
 
-  const codeRecorder = new CodeRecord(cm);
+  codeRecorder = new CodeRecord(cm);
   codeRecorder.listen();
 
-  setInterval(() => {
-    if (codeRecorder === undefined) {
-      return;
-    }
-    const records = codeRecorder.getRecords();
-    console.log(records);
-    if (records.length > 0) {
-      codePlayer.addOperations(records);
-    }
-    codePlayer.play();
-  }, 10000);
+  // setInterval(() => {
+  //   if (codeRecorder === undefined) {
+  //     return;
+  //   }
+  //   const records = codeRecorder.getRecords();
+  //   console.log(records);
+  //   if (records.length > 0) {
+  //     codePlayer.addOperations(records);
+  //   }
+  // }, 10000);
 
   const canvas = document.createElement("CANVAS");
   canvas.width = window.innerWidth;
@@ -76,12 +89,14 @@ let codePlayer;
 
   const cm = CodeMirror.fromTextArea(el, {
     theme: "paraiso-dark",
+    readOnly: true,
     value: "a",
     mode: { name: "javascript", globalVars: true },
     lineWrapping: true,
     styleSelectedText: true
   });
   cm.refresh();
+  cm.setValue(defaultCode);
 
   codePlayer = new CodePlay(cm, {
     maxDelay: 3000,
