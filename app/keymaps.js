@@ -78,7 +78,7 @@ const commands = {
 };
 
 class Keymaps {
-  constructor({ cm }) {
+  constructor({ cm, handler }) {
     // enable capturing in text area
     hotkeys.filter = function(event) {
       return true;
@@ -90,6 +90,7 @@ class Keymaps {
       if (hk.enabled && typeof commands[commandName] === "function") {
         hotkeys(hk.key, function(e, handler) {
           commands[commandName]({ e, cm });
+          hotkeyHandler({key: hk.key, name: commandName})
         });
       }
     }

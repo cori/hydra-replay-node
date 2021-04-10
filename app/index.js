@@ -51,7 +51,10 @@ window.playback = () => {
   cm.refresh();
   cm.setValue(defaultCode);
 
-  new Keymaps({ cm });
+  const keyHandler = ({key, name}) {
+    codeRecorder.recordExtraActivity({what: "is"})
+  }
+  new Keymaps({ cm, handler: keyHandler });
 
   codeRecorder = new CodeRecord(cm);
   codeRecorder.listen();
