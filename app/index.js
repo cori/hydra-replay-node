@@ -1,3 +1,5 @@
+var socket = require('socket.io-client')();
+
 const CodeMirror = require("codemirror/lib/codemirror");
 require("codemirror/mode/javascript/javascript");
 require("codemirror/addon/hint/javascript-hint");
