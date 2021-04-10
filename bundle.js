@@ -11,15 +11,8 @@ const Keymaps = require('./keymaps.js')
 // hydra
 const Hydra = require("hydra-synth");
 
-var canvas = document.createElement("CANVAS");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-canvas.style.width = "100%";
-canvas.style.height = "100%";
-document.querySelector("#canvas-container").appendChild(canvas);
-
-var container = document.querySelector("#editor-container");
-var el = document.createElement("TEXTAREA");
+const container = document.querySelector("#editor-container");
+const el = document.createElement("TEXTAREA");
 //document.body.appendChild(container);
 container.appendChild(el);
 
@@ -37,7 +30,14 @@ cm.setValue(
 
 new Keymaps({cm});
 
-var hydra = new Hydra({
+const canvas = document.createElement("CANVAS");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+canvas.style.width = "100%";
+canvas.style.height = "100%";
+document.querySelector("#canvas-container").appendChild(canvas);
+
+const hydra = new Hydra({
   canvas,
   detectAudio: false,
   enableStreamCapture: false
@@ -63,7 +63,7 @@ const flashCode = function(cm, start, end) {
 const getLine = function(cm) {
   var c = cm.getCursor();
   var s = cm.getLine(c.line);
-  flashCode({ line: c.line, ch: 0 }, { line: c.line + 1, ch: 0 });
+  flashCode(cm, { line: c.line, ch: 0 }, { line: c.line + 1, ch: 0 });
   return s;
 };
 
@@ -89,7 +89,7 @@ const getCurrentBlock = function(cm) {
   };
   var str = editor.getRange(pos1, pos2);
 
-  flashCode(pos1, pos2);
+  flashCode(cm, pos1, pos2);
 
   return str;
 };
@@ -105,10 +105,10 @@ const commands = {
     e.preventDefault();
     const editors = document.getElementById("editors");
     if(editors.style.visibility == "hidden") {
-      editors.style.visibility == "visibl";
+      editors.style.visibility = "visible";
     }
     else {
-      editors.style.visibility == "hidden";
+      editors.style.visibility = "hidden";
     }
   },
   evalLine: ({ e, cm }) => {
@@ -157,7 +157,7 @@ module.exports={
         "evalAll": {"enabled": true, "key": "ctrl+shift+enter"},
         "toggleEditor": {"enabled": true, "key": "ctrl+shift+h"},
         "toggleComment": {"enabled": true, "key": "ctrl+/"},
-        "evalLine": {"enabled": true, "key": "shift+enter"},
+        "evalLine": {"enabled": true, "key": "shift+enter,ctrl+enter"},
         "evalBlock": {"enabled": true, "key": "alt+enter"}
     },
     "menu": {

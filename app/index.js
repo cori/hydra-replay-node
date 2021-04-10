@@ -10,15 +10,8 @@ const Keymaps = require('./keymaps.js')
 // hydra
 const Hydra = require("hydra-synth");
 
-var canvas = document.createElement("CANVAS");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-canvas.style.width = "100%";
-canvas.style.height = "100%";
-document.querySelector("#canvas-container").appendChild(canvas);
-
-var container = document.querySelector("#editor-container");
-var el = document.createElement("TEXTAREA");
+const container = document.querySelector("#editor-container");
+const el = document.createElement("TEXTAREA");
 //document.body.appendChild(container);
 container.appendChild(el);
 
@@ -36,7 +29,14 @@ cm.setValue(
 
 new Keymaps({cm});
 
-var hydra = new Hydra({
+const canvas = document.createElement("CANVAS");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+canvas.style.width = "100%";
+canvas.style.height = "100%";
+document.querySelector("#canvas-container").appendChild(canvas);
+
+const hydra = new Hydra({
   canvas,
   detectAudio: false,
   enableStreamCapture: false

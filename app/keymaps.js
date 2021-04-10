@@ -12,7 +12,7 @@ const flashCode = function(cm, start, end) {
 const getLine = function(cm) {
   var c = cm.getCursor();
   var s = cm.getLine(c.line);
-  flashCode({ line: c.line, ch: 0 }, { line: c.line + 1, ch: 0 });
+  flashCode(cm, { line: c.line, ch: 0 }, { line: c.line + 1, ch: 0 });
   return s;
 };
 
@@ -38,7 +38,7 @@ const getCurrentBlock = function(cm) {
   };
   var str = editor.getRange(pos1, pos2);
 
-  flashCode(pos1, pos2);
+  flashCode(cm, pos1, pos2);
 
   return str;
 };
@@ -54,10 +54,10 @@ const commands = {
     e.preventDefault();
     const editors = document.getElementById("editors");
     if(editors.style.visibility == "hidden") {
-      editors.style.visibility == "visible";
+      editors.style.visibility = "visible";
     }
     else {
-      editors.style.visibility == "hidden";
+      editors.style.visibility = "hidden";
     }
   },
   evalLine: ({ e, cm }) => {

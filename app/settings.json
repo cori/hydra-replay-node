@@ -5,7 +5,7 @@
         "evalAll": {"enabled": true, "key": "ctrl+shift+enter"},
         "toggleEditor": {"enabled": true, "key": "ctrl+shift+h"},
         "toggleComment": {"enabled": true, "key": "ctrl+/"},
-        "evalLine": {"enabled": true, "key": "shift+enter"},
+        "evalLine": {"enabled": true, "key": "shift+enter,ctrl+enter"},
         "evalBlock": {"enabled": true, "key": "alt+enter"}
     },
     "menu": {
