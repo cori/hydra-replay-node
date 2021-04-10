@@ -44,11 +44,7 @@ h1 {
   height: 100%;
 }
 
-/* .container {
-  width:50%;
-}
- */
-#editor-container .CodeMirror {
+.container .CodeMirror {
   font-family: "VT323", monospace;
   position: relative;
   top: 0;
@@ -57,7 +53,7 @@ h1 {
   box-sizing: border-box;
   z-index: 1;
   width: 100%;
-  height: calc(100vh - 200px);
+  height: calc(50vh - 200px);
 
   background-color: rgba(255, 255, 255, 0);
   font-size: 20pt;
