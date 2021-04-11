@@ -10,7 +10,9 @@ module.exports = function(state, emit) {
   <div id="editors">
   ${state.engine.getRecorder()}
   </div>
-  <button onclick="${upload}">upload</button>
+  <div id="buttons">
+    <button onclick="${upload}">upload</button>
+  </div>
   </div>`;
   function upload(e) {
     // console.log(e.target.innerText)
@@ -60,6 +62,9 @@ class Engine {
   getRecords() {
     const records = this.codeRecorder.getRecords();
     return records;
+  }
+  setRecords(records) {
+    this.codePlayer.addOperations(records);
   }
   setupRecorder() {
     // const container = document.querySelector("#recorder-container");
@@ -224,7 +229,7 @@ const views = {
 
 app.route("/", views.welcome);
 app.route("#editor", views.editor);
-app.route("#replay", views.replay);
+app.route("#:page", views.replay);
 
 // start app
 app.mount("#choomount");
@@ -340,26 +345,17 @@ module.exports = Keymaps;
 const html = require("choo/html");
 
 // export module
-module.exports = function(state, emit) {  
+module.exports = function(state, emit) {
+  console.log(state.params.page)
+  const session = state.sessions[state.params.page];
+  state.engine.setRecords(session.records);
   return html`
   <div>
-  <h1>Hydra Replay</h1>
-  <p><a href="/#editor">Start new session</a></p>
-  <p>Replay Session</p>
+  <div id="canvas-container">${state.engine.getCanvas()}</div>
+  <div id="editors">
+  ${state.engine.getPlayer()}
+  </div>
   </div>`;
-  // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
-
-  // function changeName(e) {
-  //   console.log(e.target.innerText)
-  //   if(e.target.innerText[0] == "o")
-  //     state.p5.chooTitle = "o" + state.p5.chooTitle
-  //   else
-  //     state.p5.chooTitle = state.p5.chooTitle + "i"
-  // }
-  // function changeColor(e) {
-  //   console.log(e.target.innerText)
-  //   state.p5.backgroundColor = e.target.innerText
-  // }
 };
 },{"choo/html":9}],6:[function(require,module,exports){
 module.exports={
@@ -391,12 +387,14 @@ module.exports = function(state, emit) {
 
   state.socket.on("sessions", function(data) {
     state.sessions = [];
+    let i = 0;
     for (const session of data) {
       state.sessions.push(
         html`
-          <li>${session.name}</li>
+          <li><a href="#${i}">${session.name}</a></li>
         `
       );
+      i++;
     }
     emit("render");
   });
@@ -406,7 +404,7 @@ module.exports = function(state, emit) {
     <div>
       <h1>Hydra↺Replay</h1>
       <p><a href="/#editor">Start new session</a></p>
-      <p><a href="/#replay">Replay Session</a></p>
+      <p>Replay Session</p>
       <ul>
         ${state.sessions}
       </ul>

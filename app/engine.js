@@ -38,6 +38,9 @@ class Engine {
     const records = this.codeRecorder.getRecords();
     return records;
   }
+  setRecords(records) {
+    this.codePlayer.addOperations(records);
+  }
   setupRecorder() {
     // const container = document.querySelector("#recorder-container");
     const container = document.createElement("div");

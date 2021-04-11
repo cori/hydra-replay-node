@@ -12,12 +12,14 @@ module.exports = function(state, emit) {
 
   state.socket.on("sessions", function(data) {
     state.sessions = [];
+    let i = 0;
     for (const session of data) {
       state.sessions.push(
         html`
-          <li>${session.name}</li>
+          <li><a href="#${i}">${session.name}</a></li>
         `
       );
+      i++;
     }
     emit("render");
   });
@@ -27,7 +29,7 @@ module.exports = function(state, emit) {
     <div>
       <h1>Hydra↺Replay</h1>
       <p><a href="/#editor">Start new session</a></p>
-      <p><a href="/#replay">Replay Session</a></p>
+      <p>Replay Session</p>
       <ul>
         ${state.sessions}
       </ul>

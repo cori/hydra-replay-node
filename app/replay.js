@@ -2,24 +2,15 @@
 const html = require("choo/html");
 
 // export module
-module.exports = function(state, emit) {  
+module.exports = function(state, emit) {
+  console.log(state.params.page)
+  const session = state.sessions[state.params.page];
+  state.engine.setRecords(session.records);
   return html`
   <div>
-  <h1>Hydra Replay</h1>
-  <p><a href="/#editor">Start new session</a></p>
-  <p>Replay Session</p>
+  <div id="canvas-container">${state.engine.getCanvas()}</div>
+  <div id="editors">
+  ${state.engine.getPlayer()}
+  </div>
   </div>`;
-  // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
-
-  // function changeName(e) {
-  //   console.log(e.target.innerText)
-  //   if(e.target.innerText[0] == "o")
-  //     state.p5.chooTitle = "o" + state.p5.chooTitle
-  //   else
-  //     state.p5.chooTitle = state.p5.chooTitle + "i"
-  // }
-  // function changeColor(e) {
-  //   console.log(e.target.innerText)
-  //   state.p5.backgroundColor = e.target.innerText
-  // }
 };

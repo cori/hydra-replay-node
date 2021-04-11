@@ -37,7 +37,7 @@ const views = {
 
 app.route("/", views.welcome);
 app.route("#editor", views.editor);
-app.route("#replay", views.replay);
+app.route("#:page", views.replay);
 
 // start app
 app.mount("#choomount");

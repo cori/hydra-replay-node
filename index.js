@@ -27,7 +27,7 @@ io.on("connection", function(socket) {
   socket.on("save session", function(data) {
     sessions.push({
       name: "testing",
-      session: data
+      records: data
     })
   });
 });

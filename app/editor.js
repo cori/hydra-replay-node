@@ -9,7 +9,9 @@ module.exports = function(state, emit) {
   <div id="editors">
   ${state.engine.getRecorder()}
   </div>
-  <button onclick="${upload}">upload</button>
+  <div id="buttons">
+    <button onclick="${upload}">upload</button>
+  </div>
   </div>`;
   function upload(e) {
     // console.log(e.target.innerText)
