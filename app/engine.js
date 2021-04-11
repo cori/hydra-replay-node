@@ -24,11 +24,11 @@ class Engine {
     // var mouse = require("./mouse.js");
   }
   getRecorder() {
-    this.recorderCm.focus();
+    // this.recorderCm.focus();
     return this.recorderElement;
   }
   getPlayer() {
-    setTimeout(this.playerCm.focus,1000);
+    // this.playerCm.focus();
     return this.playerElement;
   }
   getCanvas() {

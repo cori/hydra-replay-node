@@ -4,7 +4,7 @@
   "description": "What am I about?",
   "main": "index.html",
   "scripts": {
-    "start": "npm run watch & node index.js",
+    "start": "node index.js & npm run watch",
     "watch": "watchify app/index.js -o public/bundle.js"
   },
   "dependencies": {

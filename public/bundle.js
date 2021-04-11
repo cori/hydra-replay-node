@@ -9,16 +9,6 @@ module.exports = function(state, emit) {
   <div id="canvas-container">${state.engine.getCanvas()}</div>
   <div id="editors">
   ${state.engine.getRecorder()}
-  ${state.engine.getPlayer()}
-  </div>
-
-  <div id="buttons">
-    <p>
-      code above to record ⇧ and play back below ⇩
-    </p>
-    <button onclick="${playback}">
-      play from top
-    </button>
   </div>
   </div>`;
   function playback(e) {
@@ -53,11 +43,11 @@ class Engine {
     // var mouse = require("./mouse.js");
   }
   getRecorder() {
-    this.recorderCm.focus();
+    // this.recorderCm.focus();
     return this.recorderElement;
   }
   getPlayer() {
-    setTimeout(this.playerCm.focus,1000);
+    // this.playerCm.focus();
     return this.playerElement;
   }
   getCanvas() {
@@ -383,13 +373,21 @@ module.exports={
 const html = require("choo/html");
 
 // export module
-module.exports = function(state, emit) {  
+module.exports = function(state, emit) {
+  state.socket.emit("get sessions", {});
+console.log(state.socket)
+
+  state.socket.on("sessions", function(data) {
+    console.log("sessions", data);
+  });
+
   return html`
-  <div>
-  <h1>Hydra↺Replay</h1>
-  <p><a href="/#editor">Start new session</a></p>
-  <p><a href="/#replay">Replay Session</a></p>
-  </div>`;
+    <div>
+      <h1>Hydra↺Replay</h1>
+      <p><a href="/#editor">Start new session</a></p>
+      <p><a href="/#replay">Replay Session</a></p>
+    </div>
+  `;
   // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
 
   // function changeName(e) {
@@ -404,6 +402,7 @@ module.exports = function(state, emit) {
   //   state.p5.backgroundColor = e.target.innerText
   // }
 };
+
 },{"choo/html":9}],8:[function(require,module,exports){
 var assert = require('assert')
 var LRU = require('nanolru')
