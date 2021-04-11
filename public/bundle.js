@@ -1,28 +1,4 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-// import choo's template helper
-const html = require("choo/html");
-
-// export module
-module.exports = function(state, emit) {  
-  return html`
-  <div>
-  <div id="canvas-container">${state.engine.getCanvas()}</div>
-  <div id="editors">
-  ${state.engine.getRecorder()}
-  </div>
-  <div id="buttons">
-    <button onclick="${upload}">upload</button>
-  </div>
-  </div>`;
-  function upload(e) {
-    // console.log(e.target.innerText)
-    // state.engine.playback(true);
-    const records = state.engine.getRecords();
-    state.socket.emit("save session", records);
-    
-  }
-};
-},{"choo/html":9}],2:[function(require,module,exports){
 const CodeMirror = require("codemirror/lib/codemirror");
 require("codemirror/mode/javascript/javascript");
 require("codemirror/addon/hint/javascript-hint");
@@ -189,7 +165,7 @@ class Engine {
 }
 module.exports = Engine;
 
-},{"./keymaps.js":4,"codemirror-record":36,"codemirror/addon/comment/comment":37,"codemirror/addon/hint/javascript-hint":38,"codemirror/addon/hint/show-hint":39,"codemirror/addon/selection/mark-selection":40,"codemirror/lib/codemirror":41,"codemirror/mode/javascript/javascript":42,"hydra-synth":47}],3:[function(require,module,exports){
+},{"./keymaps.js":3,"codemirror-record":36,"codemirror/addon/comment/comment":37,"codemirror/addon/hint/javascript-hint":38,"codemirror/addon/hint/show-hint":39,"codemirror/addon/selection/mark-selection":40,"codemirror/lib/codemirror":41,"codemirror/mode/javascript/javascript":42,"hydra-synth":47}],2:[function(require,module,exports){
 const socket = require('socket.io-client')();
 
 // import choo
@@ -257,9 +233,9 @@ app.emitter.on('setText', function (e) {
 
 // import a template
 const views = {
-  welcome: require("./welcome.js"),
-  editor: require("./editor.js"),
-  replay: require("./replay.js"),
+  welcome: require("./views/welcome.js"),
+  editor: require("./views/editor.js"),
+  replay: require("./views/replay.js"),
 }
 
 app.route("/", views.welcome);
@@ -272,7 +248,7 @@ app.mount("#choomount");
 console.log("!main", views.welcome);
 
 
-},{"./editor.js":1,"./engine.js":2,"./replay.js":5,"./welcome.js":7,"choo":10,"choo/html":9,"socket.io-client":72}],4:[function(require,module,exports){
+},{"./engine.js":1,"./views/editor.js":5,"./views/replay.js":6,"./views/welcome.js":7,"choo":10,"choo/html":9,"socket.io-client":72}],3:[function(require,module,exports){
 const hotkeys = require("hotkeys-js");
 const mapping = require("./settings.json").keymaps;
 
@@ -375,7 +351,46 @@ class Keymaps {
 
 module.exports = Keymaps;
 
-},{"./settings.json":6,"hotkeys-js":45}],5:[function(require,module,exports){
+},{"./settings.json":4,"hotkeys-js":45}],4:[function(require,module,exports){
+module.exports={
+    "comment1": "do not include sensitive info such as api keys and passwords",
+    "comment2": "because this file will be bundled and exposed to client side",
+    "keymaps": {
+        "evalAll": {"enabled": true, "key": "ctrl+shift+enter"},
+        "toggleEditor": {"enabled": true, "key": "ctrl+shift+h"},
+        "toggleComment": {"enabled": true, "key": "ctrl+/"},
+        "evalLine": {"enabled": true, "key": "shift+enter,ctrl+enter"},
+        "evalBlock": {"enabled": true, "key": "alt+enter"}
+    },
+    "menu": {
+        "shareMessage": "Pressing OK will share this sketch to \nhttps://twitter.com/hydra_patterns.\n\nInclude your name or twitter handle (optional):"
+    }
+}
+},{}],5:[function(require,module,exports){
+// import choo's template helper
+const html = require("choo/html");
+
+// export module
+module.exports = function(state, emit) {  
+  return html`
+  <div>
+  <div id="canvas-container">${state.engine.getCanvas()}</div>
+  <div id="editors">
+  ${state.engine.getRecorder()}
+  </div>
+  <div id="buttons">
+    <button onclick="${upload}">upload</button>
+  </div>
+  </div>`;
+  function upload(e) {
+    // console.log(e.target.innerText)
+    // state.engine.playback(true);
+    const records = state.engine.getRecords();
+    state.socket.emit("save session", records);
+    
+  }
+};
+},{"choo/html":9}],6:[function(require,module,exports){
 // import choo's template helper
 const html = require("choo/html");
 
@@ -392,22 +407,7 @@ module.exports = function(state, emit) {
   </div>
   </div>`;
 };
-},{"choo/html":9}],6:[function(require,module,exports){
-module.exports={
-    "comment1": "do not include sensitive info such as api keys and passwords",
-    "comment2": "because this file will be bundled and exposed to client side",
-    "keymaps": {
-        "evalAll": {"enabled": true, "key": "ctrl+shift+enter"},
-        "toggleEditor": {"enabled": true, "key": "ctrl+shift+h"},
-        "toggleComment": {"enabled": true, "key": "ctrl+/"},
-        "evalLine": {"enabled": true, "key": "shift+enter,ctrl+enter"},
-        "evalBlock": {"enabled": true, "key": "alt+enter"}
-    },
-    "menu": {
-        "shareMessage": "Pressing OK will share this sketch to \nhttps://twitter.com/hydra_patterns.\n\nInclude your name or twitter handle (optional):"
-    }
-}
-},{}],7:[function(require,module,exports){
+},{"choo/html":9}],7:[function(require,module,exports){
 // import choo's template helper
 const html = require("choo/html");
 
@@ -29629,4 +29629,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[3]);
+},{}]},{},[2]);

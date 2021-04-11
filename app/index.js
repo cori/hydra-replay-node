@@ -65,9 +65,9 @@ app.emitter.on('setText', function (e) {
 
 // import a template
 const views = {
-  welcome: require("./welcome.js"),
-  editor: require("./editor.js"),
-  replay: require("./replay.js"),
+  welcome: require("./views/welcome.js"),
+  editor: require("./views/editor.js"),
+  replay: require("./views/replay.js"),
 }
 
 app.route("/", views.welcome);
