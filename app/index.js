@@ -38,7 +38,7 @@ function loadSessions() {
     for (const session of data) {
       app.state.sessionDom.push(
         html`
-          <li><a href="#${i}">⏩${session.name}</a> <a href="#${i}/remix">🔄remix</a></li>
+          <li>${session.name} <a href="#${i}">⏩play</a> <a href="#${i}/remix">🔄remix</a></li>
         `
       );
       i++;

@@ -3,6 +3,7 @@ const html = require("choo/html");
 
 // export module
 module.exports = function (state, emit) {
+  const startTime = +new Date;
   const remix = state.params.mode == "remix";
   const index = state.params.page;;
 
@@ -60,7 +61,7 @@ module.exports = function (state, emit) {
     state.engine.endOfRecord();
     const records = state.engine.getRecords();
     if(JSON.parse(records).length > 3) {
-      state.socket.emit("save session", { name: state.sessionName, records });
+      state.socket.emit("save session", { name: state.sessionName, records, startTime });
     }
     state.reloadSessions();
     window.location = "/";
