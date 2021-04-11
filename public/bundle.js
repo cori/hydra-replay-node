@@ -10,10 +10,14 @@ module.exports = function(state, emit) {
   <div id="editors">
   ${state.engine.getRecorder()}
   </div>
+  <button onclick="${upload}">upload</button>
   </div>`;
-  function playback(e) {
-    console.log(e.target.innerText)
-    state.engine.playback(true);
+  function upload(e) {
+    // console.log(e.target.innerText)
+    // state.engine.playback(true);
+    const records = state.engine.getRecords();
+    state.socket.emit("save session", records);
+    
   }
 };
 },{"choo/html":9}],2:[function(require,module,exports){
@@ -52,6 +56,10 @@ class Engine {
   }
   getCanvas() {
     return this.canvasElement;
+  }
+  getRecords() {
+    const records = this.codeRecorder.getRecords();
+    return records;
   }
   setupRecorder() {
     // const container = document.querySelector("#recorder-container");
@@ -374,25 +382,34 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
-  if(state.sessions === undefined) {
-  state.socket.emit("get sessions", {});
+  if (state.sessions === undefined) {
+    state.sessions = html`
+      <p>loading...</p>
+    `;
+    state.socket.emit("get sessions", {});
   }
-  state.sessions = [];
 
   state.socket.on("sessions", function(data) {
-    for(const session of data) {
-      state.sessions.push(html`<li>${session.name}</li>`);
+    state.sessions = [];
+    for (const session of data) {
+      state.sessions.push(
+        html`
+          <li>${session.name}</li>
+        `
+      );
     }
-      console.log(state.sessions,emit)
-      emit('render')
+    emit("render");
   });
+  console.log(state.sessions, emit);
 
   return html`
     <div>
       <h1>Hydra↺Replay</h1>
       <p><a href="/#editor">Start new session</a></p>
       <p><a href="/#replay">Replay Session</a></p>
-      ${state.sessions}
+      <ul>
+        ${state.sessions}
+      </ul>
     </div>
   `;
   // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>

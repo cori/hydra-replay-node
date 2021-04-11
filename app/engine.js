@@ -34,6 +34,10 @@ class Engine {
   getCanvas() {
     return this.canvasElement;
   }
+  getRecords() {
+    const records = this.codeRecorder.getRecords();
+    return records;
+  }
   setupRecorder() {
     // const container = document.querySelector("#recorder-container");
     const container = document.createElement("div");

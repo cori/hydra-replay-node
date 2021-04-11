@@ -9,9 +9,13 @@ module.exports = function(state, emit) {
   <div id="editors">
   ${state.engine.getRecorder()}
   </div>
+  <button onclick="${upload}">upload</button>
   </div>`;
-  function playback(e) {
-    console.log(e.target.innerText)
-    state.engine.playback(true);
+  function upload(e) {
+    // console.log(e.target.innerText)
+    // state.engine.playback(true);
+    const records = state.engine.getRecords();
+    state.socket.emit("save session", records);
+    
   }
 };

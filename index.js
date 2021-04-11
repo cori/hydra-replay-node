@@ -12,7 +12,7 @@ server.listen(port, function() {
 
 app.use(express.static("public"));
 
-const sessions = [{name: "first session"}];
+const sessions = [];
 
 io.on("connection", function(socket) {
   socket.on("get sessions", function(data) {
@@ -23,5 +23,11 @@ io.on("connection", function(socket) {
     //   }
     // }
         socket.emit("sessions", sessions);
+  });
+  socket.on("save session", function(data) {
+    sessions.push({
+      name: "testing",
+      session: data
+    })
   });
 });
