@@ -346,8 +346,8 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
-  console.log(state.params.page)
   const session = state.sessions[state.params.page];
+  console.log(session.records)
   state.engine.setRecords(session.records);
   return html`
   <div>
@@ -396,6 +396,14 @@ module.exports = function(state, emit) {
       );
       i++;
     }
+    if (data.length == 0) {
+      state.sessions.push(
+        html`
+          <li>no recording yet</li>
+        `
+      );
+    }
+    state.sessions.reverse();
     emit("render");
   });
   console.log(state.sessions, emit);

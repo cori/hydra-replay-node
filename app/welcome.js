@@ -21,6 +21,14 @@ module.exports = function(state, emit) {
       );
       i++;
     }
+    if (data.length == 0) {
+      state.sessions.push(
+        html`
+          <li>no recording yet</li>
+        `
+      );
+    }
+    state.sessions.reverse();
     emit("render");
   });
   console.log(state.sessions, emit);
