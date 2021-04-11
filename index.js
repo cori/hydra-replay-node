@@ -13,7 +13,7 @@ server.listen(port, function() {
 app.use(express.static("public"));
 
 
-// io.on("connection", function(socket) {
+io.on("connection", function(socket) {
 //   socket.on("get images", function(data) {
 //     socket.emit("image array size", { imageArraySize });
 //     const iBegin = Math.max(imageHistory.length - imageArraySize, 0);
@@ -23,4 +23,4 @@ app.use(express.static("public"));
 //       }
 //     }
 //   });
-// });
+});

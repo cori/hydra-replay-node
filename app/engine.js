@@ -15,46 +15,11 @@ const Hydra = require("hydra-synth");
 const defaultCode = `osc(50,0.1,1.5).out()`;
 
 class Engine {
-  constructor() {
-    let codeRecorder, codePlayer;
-    let keymaps;
-    let firstTime = undefined;
+  constructor(state) {
+    this.state = state;
 
-    window.playback = fromTop => {
-      if (codeRecorder === undefined) {
-        return;
-      }
-      const records = codeRecorder.getRecords();
-      const recordData = JSON.parse(records);
-      console.log(recordData);
-
-      if (recordData.length > 0) {
-        let thisFirstTime;
-        if (Array.isArray(recordData[0].t)) {
-          thisFirstTime = recordData[0].t[0];
-        } else {
-          thisFirstTime = recordData[0].t;
-        }
-        if (firstTime === undefined) {
-          firstTime = thisFirstTime;
-        }
-
-        codePlayer.addOperations(records);
-        if (fromTop) {
-          codePlayer.seek(firstTime);
-        } else {
-          codePlayer.seek(thisFirstTime);
-        }
-        codePlayer.play();
-      } else {
-        if (fromTop && firstTime !== undefined) {
-          codePlayer.seek(firstTime);
-          codePlayer.play();
-        }
-      }
-    };
-
-    {
+  }
+  setupRecorder() {
       const container = document.querySelector("#editor-container");
       const el = document.createElement("TEXTAREA");
       //document.body.appendChild(container);
@@ -71,12 +36,12 @@ class Engine {
       cm.setValue(defaultCode);
 
       const keyHandler = ({ key, name }) => {
-        codeRecorder.recordExtraActivity({ key, name });
+        this.codeRecorder.recordExtraActivity({ key, name });
       };
-      keymaps = new Keymaps({ cm, handler: keyHandler });
+      this.keymaps = new Keymaps({ cm, handler: keyHandler });
 
-      codeRecorder = new CodeRecord(cm);
-      codeRecorder.listen();
+      this.codeRecorder = new CodeRecord(cm);
+      this.codeRecorder.listen();
 
       // setInterval(() => {
       //   if (codeRecorder === undefined) {
@@ -107,7 +72,7 @@ class Engine {
         hydra.eval(code);
       }
     }
-    {
+    setupPlayer() {
       const container = document.querySelector("#player-container");
       const el = document.createElement("TEXTAREA");
       //document.body.appendChild(container);
@@ -124,21 +89,51 @@ class Engine {
       cm.refresh();
       cm.setValue(defaultCode);
 
-      codePlayer = new CodePlay(cm, {
+      this.codePlayer = new CodePlay(cm, {
         maxDelay: 3000,
         autoplay: true,
         speed: 2,
         extraActivityHandler: activity => {
           console.log(activity);
-          keymaps.exec(cm, activity.name);
+          this.keymaps.exec(cm, activity.name);
         },
         extraActivityReverter: activityRecorded => {
           console.log(activityRecorded);
         }
       });
     }
-    // // overwrite hydra mouse :o
-    // var mouse = require("./mouse.js");
-  }
+  playback (fromTop) {
+      if (this.codeRecorder === undefined) {
+        return;
+      }
+      const records = this.codeRecorder.getRecords();
+      const recordData = JSON.parse(records);
+      console.log(recordData);
+
+      if (recordData.length > 0) {
+        let thisFirstTime;
+        if (Array.isArray(recordData[0].t)) {
+          thisFirstTime = recordData[0].t[0];
+        } else {
+          thisFirstTime = recordData[0].t;
+        }
+        if (this.firstTime === undefined) {
+          this.firstTime = thisFirstTime;
+        }
+
+        this.codePlayer.addOperations(records);
+        if (fromTop) {
+          this.codePlayer.seek(this.firstTime);
+        } else {
+          this.codePlayer.seek(thisFirstTime);
+        }
+        this.codePlayer.play();
+      } else {
+        if (fromTop && this.firstTime !== undefined) {
+          this.codePlayer.seek(this.firstTime);
+          this.codePlayer.play();
+        }
+      }
+    }
 }
 module.exports = Engine;

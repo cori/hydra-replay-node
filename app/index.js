@@ -21,7 +21,8 @@ function notFound() {
   `;
 }
 
-//app.state.p5 = p5sketch("p5-holder");
+app.state.socket = socket;
+app.state.engine = new Engine(app.state);
 
 app.emitter.on('setText', function (e) {
   console.log(e)
