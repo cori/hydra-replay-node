@@ -422,8 +422,13 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
-  let start = html`Start new session with name <input type="text" oninput=${updateButton} name="session-name">`;
-  let startButton = "";
+  let start = html`
+    Start new session with name
+    <input type="text" oninput=${updateButton} name="session-name" />
+  `;
+  let startButton = html`
+    <button id="startbutton" style="visibility:hidden">go!</button>
+  `;
   // let start = html`<a href="/#editor">Start new session</a>`;
   return html`
     <div>
@@ -436,7 +441,14 @@ module.exports = function(state, emit) {
     </div>
   `;
   function updateButton(e) {
-    console.log(e.target.value)
+    console.log(e.target.value);
+    const name = e.target.value;
+    const lastStartButton = startButton;
+    if (name.length > 0) {
+      document.getElementById("startbutton").style.visibility = "inherit";
+    } else {
+      document.getElementById("startbutton").style.visibility = "hidden";
+    }
   }
   // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
 
