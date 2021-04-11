@@ -18,16 +18,24 @@ class Engine {
     this.setupPlayer();
     this.setupRecorder();
     this.setupCanvas();
+    
+    const keyHandler = ({ key, name }) => {
+      this.codeRecorder.recordExtraActivity({ key, name });
+    };
+    this.keymaps = new Keymaps({ cm: this.recorderCm, handler: keyHandler, hydra: this.hydra });
+
     // // overwrite hydra mouse :o
     // var mouse = require("./mouse.js");
   }
   initRecorder(code) {
     this.recorderCm.refresh();
     this.recorderCm.setValue(code);
+    this.hydra.eval(code);
   }
   initPlayer(code) {
     this.playerCm.refresh();
     this.playerCm.setValue(code);
+    this.hydra.eval(code);
   }
   getRecorder() {
     // this.recorderCm.focus();
@@ -64,11 +72,6 @@ class Engine {
       styleSelectedText: true
     });
     this.recorderCm = cm;
-
-    const keyHandler = ({ key, name }) => {
-      this.codeRecorder.recordExtraActivity({ key, name });
-    };
-    this.keymaps = new Keymaps({ cm, handler: keyHandler });
 
     this.codeRecorder = new CodeRecord(cm);
     this.codeRecorder.listen();
@@ -124,7 +127,7 @@ class Engine {
     canvas.style.height = "100%";
     this.canvasElement = canvas;
 
-    const hydra = new Hydra({
+    this.hydra = new Hydra({
       canvas,
       detectAudio: false,
       enableStreamCapture: false

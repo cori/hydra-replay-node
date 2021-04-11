@@ -3,10 +3,11 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
+  let start = html`<a href="/#editor">Start new session</a>`;
   return html`
     <div>
       <h1>Hydra↺Replay</h1>
-      <p><a href="/#editor">Start new session</a></p>
+      <p>${start}</p>
       <p>Replay Session</p>
       <ul>
         ${state.sessionDom}
