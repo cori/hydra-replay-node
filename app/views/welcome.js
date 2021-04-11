@@ -5,10 +5,10 @@ const html = require("choo/html");
 module.exports = function(state, emit) {
   let start = html`
     Start new session with name
-    <input type="text" oninput=${updateButton} name="session-name" />
+    <input type="text" id="name-field" oninput=${updateButton} name="session-name" />
   `;
   let startButton = html`
-    <button id="startbutton" style="visibility:hidden">go!</button>
+    <button id="startbutton" style="visibility:hidden" onclick=${go}>go!</button>
   `;
   // let start = html`<a href="/#editor">Start new session</a>`;
   return html`
@@ -22,7 +22,6 @@ module.exports = function(state, emit) {
     </div>
   `;
   function updateButton(e) {
-    console.log(e.target.value);
     const name = e.target.value;
     const lastStartButton = startButton;
     if (name.length > 0) {
@@ -31,17 +30,11 @@ module.exports = function(state, emit) {
       document.getElementById("startbutton").style.visibility = "hidden";
     }
   }
-  // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
-
-  // function changeName(e) {
-  //   console.log(e.target.innerText)
-  //   if(e.target.innerText[0] == "o")
-  //     state.p5.chooTitle = "o" + state.p5.chooTitle
-  //   else
-  //     state.p5.chooTitle = state.p5.chooTitle + "i"
-  // }
-  // function changeColor(e) {
-  //   console.log(e.target.innerText)
-  //   state.p5.backgroundColor = e.target.innerText
-  // }
+  function go(e) {
+    const name = document.getElementById("name-field").value;
+    if(name.length > 0) {
+      state.sessionName = name;
+      window.location = "#editor";
+    }
+  }
 };

@@ -33,10 +33,8 @@ class Engine {
     this.recorderCm.setValue(code);
     this.hydra.eval(code);
   }
-  initPlayer(code) {
+  initPlayer() {
     this.playerCm.refresh();
-    this.playerCm.setValue(code);
-    this.hydra.eval(code);
   }
   getRecorder() {
     // this.recorderCm.focus();
@@ -380,6 +378,7 @@ const html = require("choo/html");
 // export module
 module.exports = function(state, emit) {
   state.engine.initRecorder(state.defaultCode);
+  console.log(state.sessionName);
   return html`
   <div>
   <div id="canvas-container">${state.engine.getCanvas()}</div>
@@ -394,7 +393,7 @@ module.exports = function(state, emit) {
     // console.log(e.target.innerText)
     // state.engine.playback(true);
     const records = state.engine.getRecords();
-    state.socket.emit("save session", records);
+    state.socket.emit("save session", {name: state.sessionName, records});
     
   }
 };
@@ -404,7 +403,7 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
-  state.engine.initPlayer(state.defaultCode);
+  state.engine.initPlayer();
   const session = state.sessions[state.params.page];
   console.log(session)
   state.engine.setRecords(session.records);
@@ -424,10 +423,10 @@ const html = require("choo/html");
 module.exports = function(state, emit) {
   let start = html`
     Start new session with name
-    <input type="text" oninput=${updateButton} name="session-name" />
+    <input type="text" id="name-field" oninput=${updateButton} name="session-name" />
   `;
   let startButton = html`
-    <button id="startbutton" style="visibility:hidden">go!</button>
+    <button id="startbutton" style="visibility:hidden" onclick=${go}>go!</button>
   `;
   // let start = html`<a href="/#editor">Start new session</a>`;
   return html`
@@ -441,7 +440,6 @@ module.exports = function(state, emit) {
     </div>
   `;
   function updateButton(e) {
-    console.log(e.target.value);
     const name = e.target.value;
     const lastStartButton = startButton;
     if (name.length > 0) {
@@ -450,19 +448,13 @@ module.exports = function(state, emit) {
       document.getElementById("startbutton").style.visibility = "hidden";
     }
   }
-  // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
-
-  // function changeName(e) {
-  //   console.log(e.target.innerText)
-  //   if(e.target.innerText[0] == "o")
-  //     state.p5.chooTitle = "o" + state.p5.chooTitle
-  //   else
-  //     state.p5.chooTitle = state.p5.chooTitle + "i"
-  // }
-  // function changeColor(e) {
-  //   console.log(e.target.innerText)
-  //   state.p5.backgroundColor = e.target.innerText
-  // }
+  function go(e) {
+    const name = document.getElementById("name-field").value;
+    if(name.length > 0) {
+      state.sessionName = name;
+      window.location = "#editor";
+    }
+  }
 };
 
 },{"choo/html":9}],8:[function(require,module,exports){

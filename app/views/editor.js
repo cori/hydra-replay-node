@@ -4,6 +4,7 @@ const html = require("choo/html");
 // export module
 module.exports = function(state, emit) {
   state.engine.initRecorder(state.defaultCode);
+  console.log(state.sessionName);
   return html`
   <div>
   <div id="canvas-container">${state.engine.getCanvas()}</div>
@@ -18,7 +19,7 @@ module.exports = function(state, emit) {
     // console.log(e.target.innerText)
     // state.engine.playback(true);
     const records = state.engine.getRecords();
-    state.socket.emit("save session", records);
+    state.socket.emit("save session", {name: state.sessionName, records});
     
   }
 };
