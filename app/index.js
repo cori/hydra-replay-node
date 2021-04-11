@@ -22,6 +22,41 @@ function notFound() {
 }
 
 app.state.socket = socket;
+
+function loadSessions() {
+  if (app.state.sessions === undefined) {
+    app.state.sessionsDom = html`
+      <p>loading...</p>
+    `;
+    socket.emit("get sessions", {});
+  }
+
+  socket.on("sessions", function(data) {
+    app.state.sessions = data;
+    app.state.sessionDom = [];
+    let i = 0;
+    for (const session of data) {
+      app.state.sessionDom.push(
+        html`
+          <li><a href="#${i}">${session.name}</a></li>
+        `
+      );
+      i++;
+    }
+    if (data.length == 0) {
+      app.state.sessionDom.push(
+        html`
+          <li>no recording yet</li>
+        `
+      );
+    }
+    app.state.sessionDom.reverse();
+    app.emit("render");
+  });
+}
+
+loadSessions();
+
 app.state.engine = new Engine(app.state);
 
 app.emitter.on('setText', function (e) {

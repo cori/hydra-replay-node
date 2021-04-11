@@ -4,7 +4,7 @@ const html = require("choo/html");
 // export module
 module.exports = function(state, emit) {
   const session = state.sessions[state.params.page];
-  console.log(session.records)
+  console.log(session)
   state.engine.setRecords(session.records);
   return html`
   <div>

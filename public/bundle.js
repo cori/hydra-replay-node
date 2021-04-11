@@ -214,6 +214,41 @@ function notFound() {
 }
 
 app.state.socket = socket;
+
+function loadSessions() {
+  if (app.state.sessions === undefined) {
+    app.state.sessionsDom = html`
+      <p>loading...</p>
+    `;
+    socket.emit("get sessions", {});
+  }
+
+  socket.on("sessions", function(data) {
+    app.state.sessions = data;
+    app.state.sessionDom = [];
+    let i = 0;
+    for (const session of data) {
+      app.state.sessionDom.push(
+        html`
+          <li><a href="#${i}">${session.name}</a></li>
+        `
+      );
+      i++;
+    }
+    if (data.length == 0) {
+      app.state.sessionDom.push(
+        html`
+          <li>no recording yet</li>
+        `
+      );
+    }
+    app.state.sessionDom.reverse();
+    app.emit("render");
+  });
+}
+
+loadSessions();
+
 app.state.engine = new Engine(app.state);
 
 app.emitter.on('setText', function (e) {
@@ -347,7 +382,7 @@ const html = require("choo/html");
 // export module
 module.exports = function(state, emit) {
   const session = state.sessions[state.params.page];
-  console.log(session.records)
+  console.log(session)
   state.engine.setRecords(session.records);
   return html`
   <div>
@@ -378,43 +413,13 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
-  if (state.sessions === undefined) {
-    state.sessions = html`
-      <p>loading...</p>
-    `;
-    state.socket.emit("get sessions", {});
-  }
-
-  state.socket.on("sessions", function(data) {
-    state.sessions = [];
-    let i = 0;
-    for (const session of data) {
-      state.sessions.push(
-        html`
-          <li><a href="#${i}">${session.name}</a></li>
-        `
-      );
-      i++;
-    }
-    if (data.length == 0) {
-      state.sessions.push(
-        html`
-          <li>no recording yet</li>
-        `
-      );
-    }
-    state.sessions.reverse();
-    emit("render");
-  });
-  console.log(state.sessions, emit);
-
   return html`
     <div>
       <h1>Hydra↺Replay</h1>
       <p><a href="/#editor">Start new session</a></p>
       <p>Replay Session</p>
       <ul>
-        ${state.sessions}
+        ${state.sessionDom}
       </ul>
     </div>
   `;

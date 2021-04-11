@@ -3,43 +3,13 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
-  if (state.sessions === undefined) {
-    state.sessions = html`
-      <p>loading...</p>
-    `;
-    state.socket.emit("get sessions", {});
-  }
-
-  state.socket.on("sessions", function(data) {
-    state.sessions = [];
-    let i = 0;
-    for (const session of data) {
-      state.sessions.push(
-        html`
-          <li><a href="#${i}">${session.name}</a></li>
-        `
-      );
-      i++;
-    }
-    if (data.length == 0) {
-      state.sessions.push(
-        html`
-          <li>no recording yet</li>
-        `
-      );
-    }
-    state.sessions.reverse();
-    emit("render");
-  });
-  console.log(state.sessions, emit);
-
   return html`
     <div>
       <h1>Hydra↺Replay</h1>
       <p><a href="/#editor">Start new session</a></p>
       <p>Replay Session</p>
       <ul>
-        ${state.sessions}
+        ${state.sessionDom}
       </ul>
     </div>
   `;
