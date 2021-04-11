@@ -34,8 +34,12 @@ io.on("connection", function(socket) {
     socket.emit("sessions", sessions);
   });
   socket.on("save session", function(data) {
-    sessions.push(data);
-    db.insert(data, function(err, added) {
+    const session = {
+      name: "testing",
+      records: data
+    };
+    sessions.push(session);
+    db.insert(session, function(err, added) {
       // Callback is optional
       // newDoc is the newly inserted document, including its _id
       // newDoc has no key called notToBeSaved since its value was undefined

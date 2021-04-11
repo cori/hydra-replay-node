@@ -3,7 +3,7 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
-  state.engine.initPlayer();
+  state.engine.initPlayer(state.defaultCode);
   const session = state.sessions[state.params.page];
   console.log(session)
   state.engine.setRecords(session.records);

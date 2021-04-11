@@ -32,8 +32,10 @@ class Engine {
     this.recorderCm.setValue(code);
     this.hydra.eval(code);
   }
-  initPlayer() {
+  initPlayer(code) {
     this.playerCm.refresh();
+    this.playerCm.setValue(code);
+    this.hydra.eval(code);
   }
   getRecorder() {
     // this.recorderCm.focus();
