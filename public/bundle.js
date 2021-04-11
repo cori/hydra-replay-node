@@ -16,24 +16,15 @@ module.exports = function(state, emit) {
     <p>
       code above to record ⇧ and play back below ⇩
     </p>
-    <button onclick="playback(true)">
+    <button onclick="${playback}">
       play from top
     </button>
   </div>
   </div>`;
-  // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
-
-  // function changeName(e) {
-  //   console.log(e.target.innerText)
-  //   if(e.target.innerText[0] == "o")
-  //     state.p5.chooTitle = "o" + state.p5.chooTitle
-  //   else
-  //     state.p5.chooTitle = state.p5.chooTitle + "i"
-  // }
-  // function changeColor(e) {
-  //   console.log(e.target.innerText)
-  //   state.p5.backgroundColor = e.target.innerText
-  // }
+  function playback(e) {
+    console.log(e.target.innerText)
+    state.engine.playback(true);
+  }
 };
 },{"choo/html":9}],2:[function(require,module,exports){
 const CodeMirror = require("codemirror/lib/codemirror");
@@ -74,6 +65,7 @@ class Engine {
     // const container = document.querySelector("#recorder-container");
     const container = document.createElement("div");
     container.id = "recorder-container";
+    container.className = "container";
     const el = document.createElement("TEXTAREA");
     container.appendChild(el);
     this.recorderElement = container;
@@ -111,6 +103,7 @@ class Engine {
     // const container = document.querySelector("#player-container");
     const container = document.createElement("div");
     container.id = "player-container";
+    container.className = "container";
     const el = document.createElement("TEXTAREA");
     container.appendChild(el);
     this.playerElement = container;

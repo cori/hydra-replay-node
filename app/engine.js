@@ -36,6 +36,7 @@ class Engine {
     // const container = document.querySelector("#recorder-container");
     const container = document.createElement("div");
     container.id = "recorder-container";
+    container.className = "container";
     const el = document.createElement("TEXTAREA");
     container.appendChild(el);
     this.recorderElement = container;
@@ -73,6 +74,7 @@ class Engine {
     // const container = document.querySelector("#player-container");
     const container = document.createElement("div");
     container.id = "player-container";
+    container.className = "container";
     const el = document.createElement("TEXTAREA");
     container.appendChild(el);
     this.playerElement = container;
