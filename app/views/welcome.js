@@ -3,6 +3,8 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
+  emit('DOMTitleChange', "Hydra↺Replay");
+  state.engine.stop(); // if any
   let start = html`
     Start new session 
     <input type="text" id="name-field" oninput=${updateButton} name="session-name" />

@@ -63,9 +63,19 @@ app.state.reloadSessions = () => {
   loadSessions();
 }
 
-app.emitter.on('setText', function (e) {
-  console.log(e)
-})
+// app.state.loadHandlers = [];
+// app.use((state, emitter) => {
+//   emitter.on('render', function (e) {
+//     console.log("rendered")
+//     for(const handler of app.state.loadHandlers) {
+//       handler();
+//     }
+//   })
+//   emitter.on('editorLoaded', function (e) {
+//     console.log("loaded")
+//     app.state.engine.initRecorder(app.state.defaultCode)
+//   })
+// })
 
 // import a template
 const views = {
