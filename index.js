@@ -13,12 +13,9 @@ server.listen(port, function() {
 app.use(express.static("public"));
 
 const sessions = [{name: "first session"}];
-  console.log(sessions)
 
 io.on("connection", function(socket) {
-  console.log("oi")
   socket.on("get sessions", function(data) {
-  console.log("ai")
     // socket.emit("image array size", { imageArraySize });
     // const iBegin = Math.max(sessions.length, 0);
     // for (let i = iBegin; i < sessions.length; i++) {

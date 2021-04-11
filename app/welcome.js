@@ -3,11 +3,17 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
+  if(state.sessions === undefined) {
   state.socket.emit("get sessions", {});
-console.log(state.socket)
+  }
+  state.sessions = [];
 
   state.socket.on("sessions", function(data) {
-    console.log("sessions", data);
+    for(const session of data) {
+      state.sessions.push(html`<li>${session.name}</li>`);
+    }
+      console.log(state.sessions,emit)
+      emit('render')
   });
 
   return html`
@@ -15,6 +21,7 @@ console.log(state.socket)
       <h1>Hydra↺Replay</h1>
       <p><a href="/#editor">Start new session</a></p>
       <p><a href="/#replay">Replay Session</a></p>
+      ${state.sessions}
     </div>
   `;
   // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
