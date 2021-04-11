@@ -33,8 +33,8 @@ class Engine {
     this.setupRecorder();
     this.hydra.eval(code);
     this.cm.setOption("readOnly", false);
-    this.cm.refresh();
     this.cm.setValue(code);
+    this.cm.refresh();
   }
   switchToRecorder() {
     this.cm.setOption("readOnly", false);
@@ -42,13 +42,18 @@ class Engine {
   initPlayer(code) {
     this.setupRecorder();
     this.setupPlayer();
-    this.cm.refresh();
     this.cm.setValue("");
+    this.cm.refresh();
     this.hydra.eval(code);
     this.cm.setOption("readOnly", true);
   }
   play() {
     this.codePlayer.play();
+  }
+  stop() {
+    if (this.codePlayer != undefined) {
+      this.codePlayer.pause();
+    }
   }
   endOfRecord() {
     this.codeRecorder.recordExtraActivity({ endOfRecord: true });
@@ -71,7 +76,10 @@ class Engine {
     this.codePlayer.addOperations(records);
   }
   setupEditor() {
-    // const container = document.querySelector("#recorder-container");
+    if (this.recorderElement !== undefined) {
+      const el = this.recorderElement;
+      el.parentNode.removeChild(el);
+    }
     const container = document.createElement("div");
     container.id = "recorder-container";
     container.className = "container";
