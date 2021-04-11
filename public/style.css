@@ -87,3 +87,7 @@ span[role=presentation] {
 .styled-background {
   background-color: salmon
 }
+
+ul {
+  list-style-type: none;
+}

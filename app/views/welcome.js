@@ -3,28 +3,38 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
-  let start = html`<a href="/#editor">Start new session</a>`;
+  let start = html`
+    Start new session 
+    <input type="text" id="name-field" oninput=${updateButton} name="session-name" />
+  `;
+  let startButton = html`
+    <button id="startbutton" style="visibility:hidden" onclick=${go}>go!</button>
+  `;
+  // let start = html`<a href="/#editor">Start new session</a>`;
   return html`
     <div>
       <h1>Hydra↺Replay</h1>
-      <p>${start}</p>
+      <p>${start} ${startButton}</p>
       <p>Replay Session</p>
       <ul>
         ${state.sessionDom}
       </ul>
     </div>
   `;
-  // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
-
-  // function changeName(e) {
-  //   console.log(e.target.innerText)
-  //   if(e.target.innerText[0] == "o")
-  //     state.p5.chooTitle = "o" + state.p5.chooTitle
-  //   else
-  //     state.p5.chooTitle = state.p5.chooTitle + "i"
-  // }
-  // function changeColor(e) {
-  //   console.log(e.target.innerText)
-  //   state.p5.backgroundColor = e.target.innerText
-  // }
+  function updateButton(e) {
+    const name = e.target.value;
+    const lastStartButton = startButton;
+    if (name.length > 0) {
+      document.getElementById("startbutton").style.visibility = "inherit";
+    } else {
+      document.getElementById("startbutton").style.visibility = "hidden";
+    }
+  }
+  function go(e) {
+    const name = document.getElementById("name-field").value;
+    if(name.length > 0) {
+      state.sessionName = name;
+      window.location = "#editor";
+    }
+  }
 };

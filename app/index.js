@@ -28,17 +28,17 @@ function loadSessions() {
     app.state.sessionsDom = html`
       <p>loading...</p>
     `;
-    socket.emit("get sessions", {});
   }
+  socket.emit("get sessions", {});
 
-  socket.on("sessions", function(data) {
+  socket.on("sessions", function (data) {
     app.state.sessions = data;
     app.state.sessionDom = [];
     let i = 0;
     for (const session of data) {
       app.state.sessionDom.push(
         html`
-          <li><a href="#${i}">${session.name}</a></li>
+          <li><a href="#${i}">⏩${session.name}</a> <a href="#${i}/remix">🔄remix</a></li>
         `
       );
       i++;
@@ -58,7 +58,10 @@ function loadSessions() {
 loadSessions();
 
 app.state.defaultCode = `osc(50,0.1,1.5).out()`;
-app.state.engine = new Engine({state: app.state, defaultCode: app.state.defaultCode});
+app.state.engine = new Engine({ state: app.state, defaultCode: app.state.defaultCode });
+app.state.reloadSessions = () => {
+  loadSessions();
+}
 
 app.emitter.on('setText', function (e) {
   console.log(e)
@@ -74,6 +77,7 @@ const views = {
 app.route("/", views.welcome);
 app.route("#editor", views.editor);
 app.route("#:page", views.replay);
+app.route("#:page/:mode", views.replay);
 
 // start app
 app.mount("#choomount");

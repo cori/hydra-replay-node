@@ -25,21 +25,16 @@ db.find({}, function(err, entries) {
 
 io.on("connection", function(socket) {
   socket.on("get sessions", function(data) {
-    // socket.emit("image array size", { imageArraySize });
-    // const iBegin = Math.max(sessions.length, 0);
-    // for (let i = iBegin; i < sessions.length; i++) {
-    //   if (sessions[i] != undefined) {
-    //   }
-    // }
-    socket.emit("sessions", sessions);
+    const shortSessions = [];
+    const iBegin = sessions.length - Math.min(sessions.length, 10);
+    for (let i = iBegin; i < sessions.length; i++) {
+      shortSessions.push(sessions[i]);
+    }
+    socket.emit("sessions", shortSessions);
   });
   socket.on("save session", function(data) {
-    const session = {
-      name: "testing",
-      records: data
-    };
-    sessions.push(session);
-    db.insert(session, function(err, added) {
+    sessions.push(data);
+    db.insert(data, function(err, added) {
       // Callback is optional
       // newDoc is the newly inserted document, including its _id
       // newDoc has no key called notToBeSaved since its value was undefined

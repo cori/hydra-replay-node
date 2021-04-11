@@ -13,37 +13,52 @@ const Keymaps = require("./keymaps.js");
 const Hydra = require("hydra-synth");
 
 class Engine {
-  constructor({state}) {
+  constructor({ state }) {
     this.state = state;
+    this.setupEditor();
     this.setupPlayer();
     this.setupRecorder();
     this.setupCanvas();
-    
+
     const keyHandler = ({ key, name }) => {
       this.codeRecorder.recordExtraActivity({ key, name });
     };
-    this.keymaps = new Keymaps({ cm: this.recorderCm, handler: keyHandler, hydra: this.hydra });
+
+    this.keymaps = new Keymaps({ cm: this.cm, handler: keyHandler, hydra: this.hydra });
 
     // // overwrite hydra mouse :o
     // var mouse = require("./mouse.js");
   }
   initRecorder(code) {
-    this.recorderCm.refresh();
-    this.recorderCm.setValue(code);
+    this.setupRecorder();
     this.hydra.eval(code);
+    this.cm.setOption("readOnly", false);
+    this.cm.refresh();
+    this.cm.setValue(code);
+  }
+  switchToRecorder() {
+    this.cm.setOption("readOnly", false);
   }
   initPlayer(code) {
-    this.playerCm.refresh();
-    this.playerCm.setValue(code);
+    this.setupRecorder();
+    this.setupPlayer();
+    this.cm.refresh();
+    this.cm.setValue("");
     this.hydra.eval(code);
+    this.cm.setOption("readOnly", true);
   }
-  getRecorder() {
+  play() {
+    this.codePlayer.play();
+  }
+  endOfRecord() {
+    this.codeRecorder.recordExtraActivity({ endOfRecord: true });
+  }
+  onEnd(func) {
+    this.onEndHandler = func;
+  }
+  getEditor() {
     // this.recorderCm.focus();
     return this.recorderElement;
-  }
-  getPlayer() {
-    // this.playerCm.focus();
-    return this.playerElement;
   }
   getCanvas() {
     return this.canvasElement;
@@ -55,7 +70,7 @@ class Engine {
   setRecords(records) {
     this.codePlayer.addOperations(records);
   }
-  setupRecorder() {
+  setupEditor() {
     // const container = document.querySelector("#recorder-container");
     const container = document.createElement("div");
     container.id = "recorder-container";
@@ -64,55 +79,35 @@ class Engine {
     container.appendChild(el);
     this.recorderElement = container;
 
-    const cm = CodeMirror.fromTextArea(el, {
-      theme: "paraiso-dark",
-      value: "a",
-      mode: { name: "javascript", globalVars: true },
-      lineWrapping: true,
-      styleSelectedText: true
-    });
-    this.recorderCm = cm;
-
-    this.codeRecorder = new CodeRecord(cm);
-    this.codeRecorder.listen();
-
-    // setInterval(() => {
-    //   if (codeRecorder === undefined) {
-    //     return;
-    //   }
-    //   const records = codeRecorder.getRecords();
-    //   console.log(records);
-    //   if (records.length > 0) {
-    //     codePlayer.addOperations(records);
-    //   }
-    // }, 10000);
-  }
-  setupPlayer() {
-    // const container = document.querySelector("#player-container");
-    const container = document.createElement("div");
-    container.id = "player-container";
-    container.className = "container";
-    const el = document.createElement("TEXTAREA");
-    container.appendChild(el);
-    this.playerElement = container;
-    
-    const cm = CodeMirror.fromTextArea(el, {
+    this.cm = CodeMirror.fromTextArea(el, {
       theme: "paraiso-dark",
       readOnly: true,
-      value: "a",
+      value: "",
       mode: { name: "javascript", globalVars: true },
       lineWrapping: true,
       styleSelectedText: true
     });
-    this.playerCm = cm;
-
-    this.codePlayer = new CodePlay(cm, {
+  }
+  setupRecorder() {
+    this.codeRecorder = new CodeRecord(this.cm);
+    this.codeRecorder.listen();
+  }
+  setupPlayer() {
+    this.codePlayer = new CodePlay(this.cm, {
       maxDelay: 3000,
-      autoplay: true,
+      autoplay: false,
       speed: 2,
       extraActivityHandler: activity => {
-        console.log(activity);
-        this.keymaps.exec(cm, activity.name);
+        // console.log(activity);
+        if (activity.key !== undefined) {
+          this.keymaps.exec(this.cm, activity.name);
+          this.codeRecorder.recordExtraActivity(activity);
+        }
+        if (activity.endOfRecord == true) {
+          if (this.onEndHandler !== undefined) {
+            this.onEndHandler();
+          }
+        }
       },
       extraActivityReverter: activityRecorded => {
         console.log(activityRecorded);
