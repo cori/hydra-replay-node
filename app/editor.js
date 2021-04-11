@@ -5,10 +5,10 @@ const html = require("choo/html");
 module.exports = function(state, emit) {  
   return html`
   <div>
-  <div id="canvas-container"></div>
+  <div id="canvas-container">${state.engine.getCanvas()}</div>
   <div id="editors">
-    <div id="editor-container" class="container"></div>
-    <div id="player-container" class="container"></div>
+  ${state.engine.getRecorder()}
+  ${state.engine.getPlayer()}
   </div>
 
   <div id="buttons">

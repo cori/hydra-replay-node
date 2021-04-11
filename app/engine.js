@@ -19,14 +19,26 @@ class Engine {
     this.state = state;
     this.setupRecorder();
     this.setupPlayer();
+    this.setupCanvas();
     // // overwrite hydra mouse :o
     // var mouse = require("./mouse.js");
   }
+  getRecorder() {
+    return this.recorderElement;
+  }
+  getPlayer() {
+    return this.playerElement;
+  }
+  getCanvas() {
+    return this.canvasElement;
+  }
   setupRecorder() {
-    // const container = document.querySelector("#editor-container");
+    // const container = document.querySelector("#recorder-container");
+    const container = document.createElement("div");
+    container.id = "recorder-container";
     const el = document.createElement("TEXTAREA");
-    // container.appendChild(el);
-    this.
+    container.appendChild(el);
+    this.recorderElement = container;
 
     const cm = CodeMirror.fromTextArea(el, {
       theme: "paraiso-dark",
@@ -56,30 +68,15 @@ class Engine {
     //     codePlayer.addOperations(records);
     //   }
     // }, 10000);
-
-    const canvas = document.createElement("CANVAS");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.width = "100%";
-    canvas.style.height = "100%";
-    document.querySelector("#canvas-container").appendChild(canvas);
-
-    const hydra = new Hydra({
-      canvas,
-      detectAudio: false,
-      enableStreamCapture: false
-    });
-    {
-      // init
-      const code = cm.getValue();
-      hydra.eval(code);
-    }
   }
   setupPlayer() {
     // const container = document.querySelector("#player-container");
+    const container = document.createElement("div");
+    container.id = "player-container";
     const el = document.createElement("TEXTAREA");
-    // container.appendChild(el);
-
+    container.appendChild(el);
+    this.playerElement = container;
+    
     const cm = CodeMirror.fromTextArea(el, {
       theme: "paraiso-dark",
       readOnly: true,
@@ -102,6 +99,20 @@ class Engine {
       extraActivityReverter: activityRecorded => {
         console.log(activityRecorded);
       }
+    });
+  }
+  setupCanvas() {
+    const canvas = document.createElement("CANVAS");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    this.canvasElement = canvas;
+
+    const hydra = new Hydra({
+      canvas,
+      detectAudio: false,
+      enableStreamCapture: false
     });
   }
   playback(fromTop) {

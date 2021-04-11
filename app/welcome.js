@@ -5,7 +5,7 @@ const html = require("choo/html");
 module.exports = function(state, emit) {  
   return html`
   <div>
-  <h1>Hydra Replay</h1>
+  <h1>Hydra↺Replay</h1>
   <p><a href="/#editor">Start new session</a></p>
   <p><a href="/#replay">Replay Session</a></p>
   </div>`;
