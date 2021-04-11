@@ -422,16 +422,22 @@ const html = require("choo/html");
 
 // export module
 module.exports = function(state, emit) {
+  let start = html`Start new session with name <input type="text" oninput=${updateButton} name="session-name">`;
+  let startButton = "";
+  // let start = html`<a href="/#editor">Start new session</a>`;
   return html`
     <div>
       <h1>Hydra↺Replay</h1>
-      <p><a href="/#editor">Start new session</a></p>
+      <p>${start} ${startButton}</p>
       <p>Replay Session</p>
       <ul>
         ${state.sessionDom}
       </ul>
     </div>
   `;
+  function updateButton(e) {
+    console.log(e.target.value)
+  }
   // <p><span onclick=${changeName}>ooo!</span> <span onclick=${changeName}>iii!</span></p>
 
   // function changeName(e) {
