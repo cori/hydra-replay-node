@@ -57,7 +57,8 @@ function loadSessions() {
 
 loadSessions();
 
-app.state.engine = new Engine(app.state);
+app.state.defaultCode = `osc(50,0.1,1.5).out()`;
+app.state.engine = new Engine({state: app.state, defaultCode: app.state.defaultCode});
 
 app.emitter.on('setText', function (e) {
   console.log(e)

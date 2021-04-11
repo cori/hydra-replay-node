@@ -12,16 +12,22 @@ const Keymaps = require("./keymaps.js");
 // hydra
 const Hydra = require("hydra-synth");
 
-const defaultCode = `osc(50,0.1,1.5).out()`;
-
 class Engine {
-  constructor(state) {
+  constructor({state}) {
     this.state = state;
     this.setupPlayer();
     this.setupRecorder();
     this.setupCanvas();
     // // overwrite hydra mouse :o
     // var mouse = require("./mouse.js");
+  }
+  initRecorder(code) {
+    this.recorderCm.refresh();
+    this.recorderCm.setValue(code);
+  }
+  initPlayer(code) {
+    this.playerCm.refresh();
+    this.playerCm.setValue(code);
   }
   getRecorder() {
     // this.recorderCm.focus();
@@ -57,8 +63,6 @@ class Engine {
       lineWrapping: true,
       styleSelectedText: true
     });
-    cm.refresh();
-    cm.setValue(defaultCode);
     this.recorderCm = cm;
 
     const keyHandler = ({ key, name }) => {
@@ -97,8 +101,6 @@ class Engine {
       lineWrapping: true,
       styleSelectedText: true
     });
-    cm.refresh();
-    cm.setValue(defaultCode);
     this.playerCm = cm;
 
     this.codePlayer = new CodePlay(cm, {

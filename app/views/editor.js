@@ -2,7 +2,8 @@
 const html = require("choo/html");
 
 // export module
-module.exports = function(state, emit) {  
+module.exports = function(state, emit) {
+  state.engine.initRecorder(state.defaultCode);
   return html`
   <div>
   <div id="canvas-container">${state.engine.getCanvas()}</div>
