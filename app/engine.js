@@ -17,16 +17,18 @@ const defaultCode = `osc(50,0.1,1.5).out()`;
 class Engine {
   constructor(state) {
     this.state = state;
-    this.setupRecorder();
     this.setupPlayer();
+    this.setupRecorder();
     this.setupCanvas();
     // // overwrite hydra mouse :o
     // var mouse = require("./mouse.js");
   }
   getRecorder() {
+    this.recorderCm.focus();
     return this.recorderElement;
   }
   getPlayer() {
+    setTimeout(this.playerCm.focus,1000);
     return this.playerElement;
   }
   getCanvas() {
@@ -50,6 +52,7 @@ class Engine {
     });
     cm.refresh();
     cm.setValue(defaultCode);
+    this.recorderCm = cm;
 
     const keyHandler = ({ key, name }) => {
       this.codeRecorder.recordExtraActivity({ key, name });
@@ -89,6 +92,7 @@ class Engine {
     });
     cm.refresh();
     cm.setValue(defaultCode);
+    this.playerCm = cm;
 
     this.codePlayer = new CodePlay(cm, {
       maxDelay: 3000,
