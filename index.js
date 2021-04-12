@@ -23,11 +23,17 @@ db.find({}, function(err, entries) {
   }
 });
 
+sessions.sort((a,b)=>{
+  if(b.startTime === undefined) return -1;
+  if(a.startTime === undefined) return 1;
+  return a.startTime>b.startTime ? 1 : (a.startTime<b.startTime ? -1 : 0)
+});
+
 io.on("connection", function(socket) {
   socket.on("get sessions", function(data) {
     const shortSessions = [];
     const iBegin = sessions.length - Math.min(sessions.length, 10);
-    for (let i = iBegin; i < sessions.length; i++) {
+    for (let i = sessions.length - 1; i >= iBegin; i--) {
       shortSessions.push(sessions[i]);
     }
     socket.emit("sessions", shortSessions);
