@@ -106,7 +106,7 @@ class Engine {
     this.codePlayer = new CodePlay(this.cm, {
       maxDelay: 3000,
       autoplay: false,
-      speed: 1,
+      speed: 2,
       extraActivityHandler: activity => {
         // console.log(activity);
         if (activity.key !== undefined) {
