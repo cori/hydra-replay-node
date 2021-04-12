@@ -26,7 +26,7 @@ app.get('/api/get/session/:id', (req, res) => {
 })
 
 app.get('/api/get/list', (req, res) => {
-  db.find({}).sort({ startTime: -1 }).limit(5).exec(function (err, sessions) {
+  db.find({}).sort({ startTime: -1 }).limit(10).exec(function (err, sessions) {
     res.send(JSON.stringify(sessions));
   });
 })
