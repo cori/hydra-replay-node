@@ -2,7 +2,8 @@
 
 html,
 body {
-  font-family: helvetica, arial, sans-serif;
+  font-family: 'Audiowide', cursive;
+/*   font-family: helvetica, arial, sans-serif; */
   margin: 0;
   padding: 0;
 }
@@ -90,4 +91,12 @@ span[role=presentation] {
 
 ul {
   list-style-type: none;
+}
+
+.session-name {
+  font-size: 18pt;
+}
+
+.session-link {
+  font-size: 16pt;
 }

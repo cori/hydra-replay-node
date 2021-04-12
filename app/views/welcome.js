@@ -16,7 +16,7 @@ module.exports = function(state, emit) {
   return html`
     <div>
       <h1>Hydra↺Replay</h1>
-      <p>${start} ${startButton}</p>
+      <div id=>${start} ${startButton}</p>
       <p>Replay Session</p>
       <ul>
         ${state.sessionDom}
