@@ -41,7 +41,7 @@ module.exports = function (state, emit) {
         document.getElementById("upload-button").style.display = "inherit";
       }
       else {
-        document.getElementById("back-message").style.display = "inherit";
+        // document.getElementById("back-message").style.display = "inherit";
       }
     });
   }
@@ -56,12 +56,14 @@ module.exports = function (state, emit) {
     <div id="upload-button" style="display:none">
       continue editing and <button onclick="${upload}">upload</button>
     </div>
-    <div id="back-message" style="display:none">
-      <a href="/">back to top!</a>
-    </div>
     <div id="playing-message">
       replaying...
     </div>
+  </div>
+  <div id="backlink">
+  <div id="back-message">
+    <a href="/">back to top!</a>
+  </div>
   </div>
   </div>`;
   function upload(e) {

@@ -20,7 +20,12 @@ module.exports = function (state, emit) {
       <div id="buttons">
         <button onclick="${upload}">upload</button>
       </div>
-    </div>
+      <div id="backlink">
+      <div id="back-message">
+        <a href="/">back to top!</a>
+      </div>
+      </div>
+      </div>
   `;
   function upload(e) {
     // console.log(e.target.innerText)
