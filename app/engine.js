@@ -5,7 +5,7 @@ require("codemirror/addon/hint/show-hint");
 require("codemirror/addon/selection/mark-selection");
 require("codemirror/addon/comment/comment");
 
-const { CodeRecord, CodePlay } = require("codemirror-record");
+const { CodeRecord, CodePlay } = require("./codemirror-record.js");
 
 const Keymaps = require("./keymaps.js");
 
@@ -31,7 +31,8 @@ class Engine {
   }
   initRecorder(code) {
     this.setupRecorder();
-    this.hydra.eval(code);
+    // this.hydra.eval(code);
+    eval(code);
     this.cm.setOption("readOnly", false);
     this.cm.setValue(code);
     this.cm.refresh();
@@ -44,7 +45,8 @@ class Engine {
     this.setupPlayer();
     this.cm.setValue("");
     this.cm.refresh();
-    this.hydra.eval(code);
+    // this.hydra.eval(code);
+    eval(code);
     this.cm.setOption("readOnly", true);
   }
   play() {
@@ -59,7 +61,7 @@ class Engine {
     this.codeRecorder.recordExtraActivity({ endOfRecord: true });
   }
   onEnd(func) {
-    this.onEndHandler = func;
+    this.codePlayer.setOnEndedHandler(func);
   }
   getEditor() {
     // this.recorderCm.focus();
@@ -110,12 +112,9 @@ class Engine {
         if (activity.key !== undefined) {
           this.keymaps.exec(this.cm, activity.name);
           this.codeRecorder.recordExtraActivity(activity);
+          return true;
         }
-        if (activity.endOfRecord == true) {
-          if (this.onEndHandler !== undefined) {
-            this.onEndHandler();
-          }
-        }
+        return false;
       },
       extraActivityReverter: activityRecorded => {
         console.log(activityRecorded);

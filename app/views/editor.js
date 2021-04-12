@@ -4,13 +4,11 @@ const html = require("choo/html");
 // export module
 module.exports = function (state, emit) {
   const editor = state.engine.getEditor();
-  setTimeout(() => {
-    state.engine.initRecorder(state.defaultCode); //NOOOO
-  }, 1000);
+  const startTime = +new Date;
   emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
   console.log(state.sessionName);
   if (state.sessionName === undefined) {
-    window.location = "/"; // meh
+    emit("replaceState", "/");
   }
 
   return html`
@@ -27,12 +25,11 @@ module.exports = function (state, emit) {
   function upload(e) {
     // console.log(e.target.innerText)
     // state.engine.playback(true);
-    state.engine.endOfRecord();
     const records = state.engine.getRecords();
     if(JSON.parse(records).length > 3) {
-      state.socket.emit("save session", { name: state.sessionName, records });
+      state.socket.emit("save session", { name: state.sessionName, records, startTime });
     }
-    state.reloadSessions();
-    window.location = "/";
+    emit("loadSessions");
+    emit("replaceState", "/");
   }
 };

@@ -1,40 +1,50 @@
 // import choo's template helper
 const html = require("choo/html");
 
+const superagent = require('superagent');
+
 // export module
 module.exports = function (state, emit) {
+  const startTime = +new Date;
   const remix = state.params.mode == "remix";
-  const index = state.params.page;;
+  const id = state.params.page;
 
-  if (state.sessions === undefined) {
-    window.location = "/"; // meh
+  // state.engine.initPlayer(state.defaultCode);
+
+  let session;
+  // setTimeout(() => {
+  //   state.engine.initRecorder(state.defaultCode); //NOOOO
+  // }, 1000);
+  state.engine.initPlayer("");
+
+  superagent.get(`/api/get/session/${id}`)
+    .end((err, res) => {
+      session = JSON.parse(res.text);
+      setParams();
+    });
+
+  function setParams() {
+    state.sessionName = session.name;
+    state.engine.setRecords(session.records);
+    state.engine.play();
+
+    emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
+
+    let player = state.engine.codePlayer;
+    console.log(player.getDuration())
+    state.sessionName = "Re: " + state.sessionName;
+    state.engine.onEnd(() => {
+      console.log("finished")
+      document.getElementById("playing-message").style.display = "none";
+      if (remix) {
+        state.engine.switchToRecorder();
+        document.getElementById("upload-button").style.display = "inherit";
+      }
+      else {
+        document.getElementById("back-message").style.display = "inherit";
+      }
+    });
   }
-
-  state.engine.initPlayer(state.defaultCode);
-
-  const session = state.sessions[index];
-  state.sessionName = session.name;
-  console.log(session)
-  state.engine.setRecords(session.records);
-  state.engine.play();
-
-  emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
-
-  let player = state.engine.codePlayer;
-  console.log(player.getDuration())
-  let speed = 2;
-  state.sessionName = "Re: " + state.sessionName;
-  state.engine.onEnd(() => {
-    console.log("finished")
-    document.getElementById("playing-message").style.display = "none";
-    if (remix) {
-      state.engine.switchToRecorder();
-      document.getElementById("upload-button").style.display = "inherit";
-    }
-    else {
-      document.getElementById("back-message").style.display = "inherit";
-    }
-  });
 
   return html`
   <div>
@@ -50,19 +60,18 @@ module.exports = function (state, emit) {
       <a href="/">back to top!</a>
     </div>
     <div id="playing-message">
-      playing...
+      replaying...
     </div>
   </div>
   </div>`;
   function upload(e) {
     // console.log(e.target.innerText)
     // state.engine.playback(true);
-    state.engine.endOfRecord();
     const records = state.engine.getRecords();
-    if(JSON.parse(records).length > 3) {
-      state.socket.emit("save session", { name: state.sessionName, records });
+    if (JSON.parse(records).length > 3) {
+      state.socket.emit("save session", { name: state.sessionName, records, startTime });
     }
-    state.reloadSessions();
-    window.location = "/";
+    emit("loadSessions");
+    emit("pushState", "/");
   }
 };
