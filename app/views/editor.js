@@ -8,7 +8,9 @@ module.exports = function (state, emit) {
   emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
   console.log(state.sessionName);
   if (state.sessionName === undefined) {
-    emit("replaceState", "/");
+    // emit("replaceState", "/");
+    window.location="/"
+    
   }
 
   return html`
@@ -35,6 +37,7 @@ module.exports = function (state, emit) {
       state.socket.emit("save session", { name: state.sessionName, records, startTime });
     }
     emit("loadSessions");
-    emit("replaceState", "/");
+    // emit("replaceState", "/");
+    window.location="/"
   }
 };

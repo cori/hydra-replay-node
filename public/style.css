@@ -130,12 +130,14 @@ ul {
 
 .session-name {
   font-size: 18pt;
-  float: left;
+  margin-bottom: 5px;
+/*   float: left; */
 }
 
 .session-link {
   font-size: 16pt;
-  float: left;
+  margin-top: 5px;
+/*   float: left; */
 }
 
 .session-break {

@@ -74,6 +74,7 @@ module.exports = function (state, emit) {
       state.socket.emit("save session", { name: state.sessionName, records, startTime });
     }
     emit("loadSessions");
-    emit("pushState", "/");
+    // emit("pushState", "/");
+    window.location="/"
   }
 };
