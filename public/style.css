@@ -91,6 +91,8 @@ span[role=presentation] {
 
 ul {
   list-style-type: none;
+  padding: 40px;
+  margin: 0;
 }
 
 .session-name {
@@ -99,4 +101,16 @@ ul {
 
 .session-link {
   font-size: 16pt;
+}
+
+.menu-start {
+  font-size: 18pt;
+}
+
+.menu-input {
+  padding: 40px;
+}
+
+.menu-replay {
+  font-size: 18pt;
 }
