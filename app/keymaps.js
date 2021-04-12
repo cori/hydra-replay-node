@@ -47,8 +47,7 @@ const commands = {
   evalAll: ({ e, cm, hydra }) => {
     const code = cm.getValue();
     flashCode(cm);
-    // hydra.eval(code);
-    eval(code);
+    hydra.eval(code);
   },
   toggleEditor: ({ e, cm, hydra }) => {
     const editors = document.getElementById("editors");
@@ -60,8 +59,7 @@ const commands = {
   },
   evalLine: ({ e, cm, hydra }) => {
     const code = getLine(cm);
-    // hydra.eval(code);
-    eval(code);
+    hydra.eval(code);
   },
   toggleComment: ({ e, cm, hydra }) => {
     cm.toggleComment();
@@ -69,8 +67,7 @@ const commands = {
   evalBlock: ({ e, cm, hydra }) => {
     const code = getCurrentBlock(cm);
     console.log(code);
-    // hydra.eval(code);
-    eval(code);
+    hydra.eval(code);
   }
 };
 

@@ -4,7 +4,6 @@ const html = require("choo/html");
 // export module
 module.exports = function (state, emit) {
   const editor = state.engine.getEditor();
-  const startTime = +new Date;
   setTimeout(() => {
     state.engine.initRecorder(state.defaultCode); //NOOOO
   }, 1000);
@@ -31,7 +30,7 @@ module.exports = function (state, emit) {
     state.engine.endOfRecord();
     const records = state.engine.getRecords();
     if(JSON.parse(records).length > 3) {
-      state.socket.emit("save session", { name: state.sessionName, records, startTime });
+      state.socket.emit("save session", { name: state.sessionName, records });
     }
     state.reloadSessions();
     window.location = "/";

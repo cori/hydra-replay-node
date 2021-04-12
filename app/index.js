@@ -38,7 +38,7 @@ function loadSessions() {
     for (const session of data) {
       app.state.sessionDom.push(
         html`
-          <li><p class="session-name">${session.name} <!-- at ${new Date(session.startTime)} --></p><p class="session-link"> <a href="#${i}">⏩play</a> <a href="#${i}/remix">🔄remix</a></p></li>
+          <li><a href="#${i}">⏩${session.name}</a> <a href="#${i}/remix">🔄remix</a></li>
         `
       );
       i++;
@@ -50,7 +50,7 @@ function loadSessions() {
         `
       );
     }
-    // app.state.sessionDom.reverse();
+    app.state.sessionDom.reverse();
     app.emit("render");
   });
 }
