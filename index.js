@@ -19,7 +19,9 @@ const sessions = [];
 
 db.find({}, function(err, entries) {
   for (const entry of entries) {
-    sessions.push(entry);
+    if(entry.startTime !== undefined) {
+      sessions.push(entry);
+    }
   }
 });
 
