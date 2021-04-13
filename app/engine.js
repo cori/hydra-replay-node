@@ -34,7 +34,7 @@ module.exports = function (state, emitter) {
 
   keymaps = new Keymaps({ cm, handler: keyHandler, emitter });
 
-  state.engine = {editorElement, canvasElement};
+  state.engine = { editorElement, canvasElement };
 
   // // overwrite hydra mouse :o
   // var mouse = require("./mouse.js");
@@ -72,6 +72,9 @@ module.exports = function (state, emitter) {
       },
       extraActivityReverter: activityRecorded => {
         console.log(activityRecorded);
+      },
+      onEndedHandler: () => {
+        emitter.emit("playbackEnd");
       }
     });
   }
@@ -100,16 +103,14 @@ module.exports = function (state, emitter) {
   emitter.on("switchToRecorder", () => {
     cm.setOption("readOnly", false);
   });
-  emitter.on("initPlayer", (code) => {
+  emitter.on("initPlayer", () => {
     setupRecorder();
-    if(codePlayer !== undefined)  {
+    if (codePlayer !== undefined) {
       codePlayer.pause();
     }
     setupPlayer();
     cm.setValue("");
     cm.refresh();
-    // this.hydra.eval(code);
-    eval(code);
     cm.setOption("readOnly", true);
   });
   emitter.on("play", () => {
@@ -120,22 +121,16 @@ module.exports = function (state, emitter) {
       codePlayer.pause();
     }
   });
-  emitter.on("onEnd", (func) => {
-    codePlayer.setOnEndedHandler(func);
-  });
-  emitter.on("onEval", (func) => {
-    onEvalHandler = func;
-  });
   emitter.on("exec", (code) => {
     try {
       const ret = eval(code);
       if (onEvalHandler) {
-        onEvalHandler(true, ret);
+        emitter.emit("showEvalOnMenu", { success: true, e: ret });
       }
     } catch (e) {
       console.log(e);
       if (onEvalHandler) {
-        onEvalHandler(false, e);
+        emitter.emit("showEvalOnMenu", { success: false, e });
       }
     }
   });

@@ -14,20 +14,11 @@ module.exports = function (state, emit) {
   }
   const remix = state.params.mode == "remix";
   const id = state.params.id;
-  let playingMessage;
 
-  emit("initPlayer", "");
-
-  emit("onEnd", () => {
-    emit("playbackEnd")
-  });
-
-  emit("onEval", (success, e) => {
-    emit("eval", { success, e });
-  })
+  emit("initPlayer");
 
   if (remix) {
-    playingMessage = "replaying...";
+    state.playingMessage = "replaying...";
     emit("getSession", id, (data) => {
       const session = data;
       state.sessionName = session.name;
@@ -35,12 +26,13 @@ module.exports = function (state, emit) {
       emit("play");
 
       state.sessionName = "Re: " + state.sessionName;
-      emit("loadEditor", playingMessage);
 
+      emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
+      state.playingMessage = `${state.playingMessage} ${state.sessionName}`;
     });
   }
   else {
-    playingMessage = "starting...";
+    state.playingMessage = "starting...";
     if (state.sessionName === undefined) {
       // emit("replaceState", "/");
       window.location = "/"
@@ -50,7 +42,8 @@ module.exports = function (state, emit) {
       emit("setRecords", defaultCode.records);
       emit("play");
 
-      emit("loadEditor", playingMessage);
+      emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
+      state.playingMessage = `${state.playingMessage} ${state.sessionName}`;
     }, 100);
   }
 
@@ -65,7 +58,7 @@ module.exports = function (state, emit) {
       continue editing and <button onclick="${upload}">upload</button>
     </div>
     <div id="playing-message">
-      ${playingMessage}
+      ${state.playingMessage}
     </div>
   </div>
   <div id="backlink">
