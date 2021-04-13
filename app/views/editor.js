@@ -98,18 +98,6 @@ module.exports = function (state, emit) {
   }
   function upload(e) {
     const records = state.engine.getRecords();
-    superagent
-      .post('/api/set/session')
-      .send({ name: state.sessionName, records, startTime })
-      .end((err, res) => {
-        if (err) {
-          console.log('error posting sketch', err)
-        } else {
-          console.log('posted')
-        }
-        // emit("loadSessions");
-        // // emit("pushState", "/");
-        window.location = "/"
-      })
+    emit("upload", { records, startTime, name: state.sessionName })
   }
 };

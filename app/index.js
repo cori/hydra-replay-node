@@ -27,6 +27,22 @@ app.emitter.on("render", () => {
   app.state.engine.initRecorder("");
 });
 
+app.emitter.on("upload", (data) => {
+  superagent
+  .post('/api/set/session')
+  .send(data)
+  .end((err, res) => {
+    if (err) {
+      console.log('error posting sketch', err)
+    } else {
+      console.log('posted')
+    }
+    // emit("loadSessions");
+    // // emit("pushState", "/");
+    window.location = "/"
+  })
+})
+
 app.emitter.on("loadSessions", () => {
   app.state.sessionDom = [html`<li>loading...</li>`];
   superagent.get(`/api/get/list`)
