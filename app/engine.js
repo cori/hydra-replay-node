@@ -24,8 +24,8 @@ module.exports = function (state, emitter) {
   let onEvalHandler;
 
   setupEditor();
-  setupPlayer();
-  setupRecorder();
+  // setupPlayer();
+  // setupRecorder();
   setupCanvas();
 
   const keyHandler = ({ key, name }) => {
@@ -90,7 +90,6 @@ module.exports = function (state, emitter) {
   }
 
   emitter.on("initRecorder", (code) => {
-    // TODO: need to dispose first!!!
     setupRecorder();
     // this.hydra.eval(code);
     eval(code);
@@ -102,8 +101,10 @@ module.exports = function (state, emitter) {
     cm.setOption("readOnly", false);
   });
   emitter.on("initPlayer", (code) => {
-    // TODO: need to dispose first!!!
     setupRecorder();
+    if(codePlayer !== undefined)  {
+      codePlayer.pause();
+    }
     setupPlayer();
     cm.setValue("");
     cm.refresh();
