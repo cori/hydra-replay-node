@@ -1,12 +1,44 @@
 const html = require("choo/html");
 
 const session = require("./views/session.js");
+const defaultCode = require("./default-code.js");
 
 module.exports = function (state, emitter) {
   emitter.on("render", () => {
-    emitter.emit("initRecorder", "");
+    emitter.emit("initRecorder");
   });
 
+  emitter.on("setupEditor", (id) => {
+    const remix = id !== undefined;
+    if (remix) {
+      state.playingMessage = "replaying...";
+      emitter.emit("getSession", id, (data) => {
+        const session = data;
+        state.sessionName = session.name;
+
+        state.sessionName = "Re: " + state.sessionName;
+
+        state.playingMessage = `${state.playingMessage} ${state.sessionName}`;
+        state.editorSetup = true;
+        state.prevRecords = session.records;
+        emitter.emit("render");
+      });
+    }
+    else {
+      state.playingMessage = "starting...";
+      if (state.sessionName === undefined) {
+        window.location = "/";
+      }
+      state.playingMessage = `${state.playingMessage} ${state.sessionName}`;
+      state.editorSetup = true;
+      state.prevRecords = defaultCode.records;
+
+      //wtf
+      emitter.emit("setRecords", state.prevRecords);
+      emitter.emit("play");  
+      emitter.emit("render");
+    }
+  })
   emitter.on("getSession", (id, done) => {
     fetch(`/api/get/session/${id}`)
       .then(response => response.json())

@@ -92,12 +92,11 @@ module.exports = function (state, emitter) {
     });
   }
 
-  emitter.on("initRecorder", (code) => {
+  emitter.on("initRecorder", () => {
     setupRecorder();
-    // this.hydra.eval(code);
-    eval(code);
+    hydra.eval("hush(); solid().out()");
     cm.setOption("readOnly", false);
-    cm.setValue(code);
+    cm.setValue("");
     cm.refresh();
   });
   emitter.on("switchToRecorder", () => {
