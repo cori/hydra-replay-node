@@ -8,6 +8,7 @@ module.exports = function (state, emit) {
   const startTime = +new Date;
   const remix = state.params.mode == "remix";
   const id = state.params.page;
+  let playingMessage = `replaying...`;
 
   // state.engine.initPlayer(state.defaultCode);
 
@@ -33,6 +34,8 @@ module.exports = function (state, emit) {
     let player = state.engine.codePlayer;
     console.log(player.getDuration())
     state.sessionName = "Re: " + state.sessionName;
+    playingMessage = `replaying ${state.sessionName}`;
+    // emit("render");
     state.engine.onEnd(() => {
       console.log("finished")
       document.getElementById("playing-message").style.display = "none";
@@ -57,7 +60,7 @@ module.exports = function (state, emit) {
       continue editing and <button onclick="${upload}">upload</button>
     </div>
     <div id="playing-message">
-      replaying...
+      ${playingMessage}
     </div>
   </div>
   <div id="backlink">
