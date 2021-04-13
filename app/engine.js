@@ -1,3 +1,5 @@
+const html = require("choo/html");
+
 const CodeMirror = require("codemirror/lib/codemirror");
 require("codemirror/mode/javascript/javascript");
 require("codemirror/addon/hint/javascript-hint");
@@ -12,97 +14,37 @@ const Keymaps = require("./keymaps.js");
 // hydra
 const Hydra = require("hydra-synth");
 
-class Engine {
-  constructor({ state }) {
-    this.state = state;
-    this.setupEditor();
-    this.setupPlayer();
-    this.setupRecorder();
-    this.setupCanvas();
+module.exports = function (state, emitter) {
+  let editorElement;
+  let cm;
+  let canvasElement;
+  let codeRecorder;
+  let codePlayer;
+  let hydra;
+  let onEvalHandler;
 
-    const keyHandler = ({ key, name }) => {
-      this.codeRecorder.recordExtraActivity({ key, name });
-    };
+  setupEditor();
+  setupPlayer();
+  setupRecorder();
+  setupCanvas();
 
-    this.keymaps = new Keymaps({ cm: this.cm, handler: keyHandler, engine: this });
+  const keyHandler = ({ key, name }) => {
+    codeRecorder.recordExtraActivity({ key, name });
+  };
 
-    // // overwrite hydra mouse :o
-    // var mouse = require("./mouse.js");
-  }
-  initRecorder(code) {
-    this.setupRecorder();
-    // this.hydra.eval(code);
-    eval(code);
-    this.cm.setOption("readOnly", false);
-    this.cm.setValue(code);
-    this.cm.refresh();
-  }
-  switchToRecorder() {
-    this.cm.setOption("readOnly", false);
-  }
-  initPlayer(code) {
-    this.setupRecorder();
-    this.setupPlayer();
-    this.cm.setValue("");
-    this.cm.refresh();
-    // this.hydra.eval(code);
-    eval(code);
-    this.cm.setOption("readOnly", true);
-  }
-  play() {
-    this.codePlayer.play();
-  }
-  stop() {
-    if (this.codePlayer != undefined) {
-      this.codePlayer.pause();
-    }
-  }
-  onEnd(func) {
-    this.codePlayer.setOnEndedHandler(func);
-  }
-  onEval(func) {
-    this.onEvalHandler = func;
-  }
-  exec(code) {
-    try {
-      const ret = eval(code);
-      if (this.onEvalHandler) {
-        this.onEvalHandler(true, ret);
-      }
-    } catch (e) {
-      console.log(e);
-      if (this.onEvalHandler) {
-        this.onEvalHandler(false, e);
-      }
-    }
-  }
-  getEditor() {
-    // this.recorderCm.focus();
-    return this.recorderElement;
-  }
-  getCanvas() {
-    return this.canvasElement;
-  }
-  getRecords() {
-    const records = this.codeRecorder.getRecords();
-    return records;
-  }
-  setRecords(records) {
-    this.codePlayer.addOperations(records);
-  }
-  setupEditor() {
-    if (this.recorderElement !== undefined) {
-      const el = this.recorderElement;
-      el.parentNode.removeChild(el);
-    }
-    const container = document.createElement("div");
-    container.id = "recorder-container";
-    container.className = "container";
+  keymaps = new Keymaps({ cm, handler: keyHandler, emitter });
+
+  state.engine = {editorElement, canvasElement};
+
+  // // overwrite hydra mouse :o
+  // var mouse = require("./mouse.js");
+
+  function setupEditor() {
     const el = document.createElement("TEXTAREA");
-    container.appendChild(el);
-    this.recorderElement = container;
+    editorElement =
+      html`<div id="recorder-container" class="container">${el}</div>`;
 
-    this.cm = CodeMirror.fromTextArea(el, {
+    cm = CodeMirror.fromTextArea(el, {
       theme: "paraiso-dark",
       readOnly: true,
       value: "",
@@ -111,20 +53,19 @@ class Engine {
       styleSelectedText: true
     });
   }
-  setupRecorder() {
-    this.codeRecorder = new CodeRecord(this.cm);
-    this.codeRecorder.listen();
+  function setupRecorder() {
+    codeRecorder = new CodeRecord(cm);
+    codeRecorder.listen();
   }
-  setupPlayer() {
-    this.codePlayer = new CodePlay(this.cm, {
+  function setupPlayer() {
+    codePlayer = new CodePlay(cm, {
       maxDelay: 3000,
       autoplay: false,
       speed: 2,
       extraActivityHandler: activity => {
-        // console.log(activity);
         if (activity.key !== undefined) {
-          this.keymaps.exec(this.cm, activity.name);
-          this.codeRecorder.recordExtraActivity(activity);
+          keymaps.exec(cm, activity.name);
+          codeRecorder.recordExtraActivity(activity);
           return true;
         }
         return false;
@@ -134,52 +75,73 @@ class Engine {
       }
     });
   }
-  setupCanvas() {
-    const canvas = document.createElement("CANVAS");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.width = "100%";
-    canvas.style.height = "100%";
-    this.canvasElement = canvas;
+  function setupCanvas() {
+    const canvasElement = html`<canvas></canvas>`;
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = window.innerHeight;
+    canvasElement.style.width = "100%";
+    canvasElement.style.height = "100%";
 
-    this.hydra = new Hydra({
-      canvas,
+    hydra = new Hydra({
+      canvas: canvasElement,
       detectAudio: false,
       enableStreamCapture: false
     });
   }
-  playback(fromTop) {
-    if (this.codeRecorder === undefined) {
-      return;
-    }
-    const records = this.codeRecorder.getRecords();
-    const recordData = JSON.parse(records);
-    console.log(recordData);
 
-    if (recordData.length > 0) {
-      let thisFirstTime;
-      if (Array.isArray(recordData[0].t)) {
-        thisFirstTime = recordData[0].t[0];
-      } else {
-        thisFirstTime = recordData[0].t;
+  emitter.on("initRecorder", (code) => {
+    // TODO: need to dispose first!!!
+    setupRecorder();
+    // this.hydra.eval(code);
+    eval(code);
+    cm.setOption("readOnly", false);
+    cm.setValue(code);
+    cm.refresh();
+  });
+  emitter.on("switchToRecorder", () => {
+    cm.setOption("readOnly", false);
+  });
+  emitter.on("initPlayer", (code) => {
+    // TODO: need to dispose first!!!
+    setupRecorder();
+    setupPlayer();
+    cm.setValue("");
+    cm.refresh();
+    // this.hydra.eval(code);
+    eval(code);
+    cm.setOption("readOnly", true);
+  });
+  emitter.on("play", () => {
+    codePlayer.play();
+  });
+  emitter.on("stop", () => {
+    if (codePlayer != undefined) {
+      codePlayer.pause();
+    }
+  });
+  emitter.on("onEnd", (func) => {
+    codePlayer.setOnEndedHandler(func);
+  });
+  emitter.on("onEval", (func) => {
+    onEvalHandler = func;
+  });
+  emitter.on("exec", (code) => {
+    try {
+      const ret = eval(code);
+      if (onEvalHandler) {
+        onEvalHandler(true, ret);
       }
-      if (this.firstTime === undefined) {
-        this.firstTime = thisFirstTime;
-      }
-
-      this.codePlayer.addOperations(records);
-      if (fromTop) {
-        this.codePlayer.seek(this.firstTime);
-      } else {
-        this.codePlayer.seek(thisFirstTime);
-      }
-      this.codePlayer.play();
-    } else {
-      if (fromTop && this.firstTime !== undefined) {
-        this.codePlayer.seek(this.firstTime);
-        this.codePlayer.play();
+    } catch (e) {
+      console.log(e);
+      if (onEvalHandler) {
+        onEvalHandler(false, e);
       }
     }
-  }
-}
-module.exports = Engine;
+  });
+  emitter.on("getRecords", (func) => {
+    func(codeRecorder.getRecords());
+  });
+  emitter.on("setRecords", (records) => {
+    codePlayer.addOperations(records);
+  });
+};

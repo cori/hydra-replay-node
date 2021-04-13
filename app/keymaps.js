@@ -44,36 +44,36 @@ const getCurrentBlock = function(cm) {
 };
 
 const commands = {
-  evalAll: ({ cm, engine }) => {
+  evalAll: ({ cm, emitter }) => {
     const code = cm.getValue();
     flashCode(cm);
-    engine.exec(code);
+    emitter.emit("exec", code);
   },
-  toggleEditor: ({ cm, engine }) => {
-    const editors = document.getElementById("editors");
-    if (editors.style.visibility == "hidden") {
-      editors.style.visibility = "visible";
-    } else {
-      editors.style.visibility = "hidden";
-    }
-  },
-  evalLine: ({ cm, engine }) => {
+  // toggleEditor: ({ cm, engine }) => {
+  //   const editors = document.getElementById("editors");
+  //   if (editors.style.visibility == "hidden") {
+  //     editors.style.visibility = "visible";
+  //   } else {
+  //     editors.style.visibility = "hidden";
+  //   }
+  // },
+  evalLine: ({ cm, emitter }) => {
     const code = getLine(cm);
-    engine.exec(code);
+    emitter.emit("exec", code);
   },
-  toggleComment: ({ cm, engine }) => {
-    cm.toggleComment();
-  },
-  evalBlock: ({ cm, engine }) => {
+  // toggleComment: ({ cm, engine }) => {
+  //   cm.toggleComment();
+  // },
+  evalBlock: ({ cm, emitter }) => {
     const code = getCurrentBlock(cm);
-    engine.exec(code);
+    emitter.emit("exec", code);
   }
 };
 
 class Keymaps {
-  constructor({ cm, handler, engine }) {
+  constructor({ cm, handler, emitter }) {
     this.cm = cm;
-    this.engine = engine;
+    this.emitter = emitter;
     // enable capturing in text area
     hotkeys.filter = function(event) {
       return true;
@@ -85,7 +85,7 @@ class Keymaps {
       if (hk.enabled && typeof commands[commandName] === "function") {
         hotkeys(hk.key, function(e, hotkeyHandler) {
           e.preventDefault();
-          commands[commandName]({ cm, engine });
+          commands[commandName]({ cm, emitter });
           handler({ key: hk.key, name: commandName });
         });
       }
@@ -93,7 +93,7 @@ class Keymaps {
   }
   exec(cm, name) {
     if (commands[name] !== undefined) {
-      commands[name]({ cm, engine: this.engine });
+      commands[name]({ cm, emitter: this.emitter });
     }
   }
 }

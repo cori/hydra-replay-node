@@ -2,8 +2,6 @@
 const choo = require("choo");
 const html = require("choo/html");
 
-const Engine = require("./engine.js");
-
 // initialize choo
 const app = choo({ hash: true });
 
@@ -30,10 +28,10 @@ app.route("/", views.welcome);
 app.route("#:mode", views.editor);
 app.route("#:mode/:page", views.editor);
 
-app.state.engine = new Engine({ state: app.state, emit: app.emitter.emit });
+app.use(require("./engine.js"));
 
 app.emitter.on("render", () => {
-  app.state.engine.initRecorder("");
+  app.emitter.emit("initRecorder", "");
 });
 
 app.emitter.on("updateStartEditButton", (name) => {
@@ -50,8 +48,8 @@ app.emitter.on("getSession", (id) => {
     .then(data => {
       const session = data;
       app.state.sessionName = session.name;
-      app.state.engine.setRecords(session.records);
-      app.state.engine.play();
+      app.emitter.emit("setRecords", session.records);
+      app.emitter.emit("play");
 
       app.state.sessionName = "Re: " + app.state.sessionName;
       app.emitter.emit("loadEditor");
@@ -61,15 +59,13 @@ app.emitter.on("getSession", (id) => {
 app.emitter.on("loadEditor", () => {
   app.emitter.emit('DOMTitleChange', `${app.state.sessionName} - Hydra↺Replay`);
 
-  let player = app.state.engine.codePlayer;
-  console.log(player.getDuration())
   document.getElementById("playing-message").innerText = `replaying ${app.state.sessionName}`;
 });
 
 app.emitter.on("playbackEnd", () => {
   console.log("finished")
   document.getElementById("playing-message").style.display = "none";
-  app.state.engine.switchToRecorder();
+  app.emitter.emit("switchToRecorder");
   document.getElementById("upload-button").style.display = "inherit";
 });
 

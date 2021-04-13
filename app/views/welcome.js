@@ -4,7 +4,7 @@ const html = require("choo/html");
 // export module
 module.exports = function (state, emit) {
   emit('DOMTitleChange', "Hydra↺Replay");
-  state.engine.stop(); // if any
+  emit("stop"); // if any
   let startButton = html`
     <button id="startbutton" style="visibility:hidden" onclick=${go}>go!</button>
   `;

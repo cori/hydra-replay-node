@@ -16,13 +16,13 @@ module.exports = function (state, emit) {
   const id = state.params.page;
   let playingMessage = `replaying...`;
 
-  state.engine.initPlayer("");
+  emit("initPlayer", "");
 
-  state.engine.onEnd(() => {
+  emit("onEnd", () => {
     emit("playbackEnd")
   });
 
-  state.engine.onEval((success, e) => {
+  emit("onEval", (success, e) => {
     emit("eval", { success, e });
   })
 
@@ -36,8 +36,8 @@ module.exports = function (state, emit) {
     }
     // state.sessionName = session.name;
     setTimeout(() => {//BADBADBADBAD
-      state.engine.setRecords(defaultCode.records);
-      state.engine.play();
+      emit("setRecords", defaultCode.records);
+      emit("play");
 
       emit("loadEditor");
     }, 100);
@@ -45,9 +45,9 @@ module.exports = function (state, emit) {
 
   return html`
   <div>
-  <div id="canvas-container">${state.engine.getCanvas()}</div>
+  <div id="canvas-container">${state.engine.canvasElement}</div>
   <div id="editors">
-  ${state.engine.getEditor()}
+  ${state.engine.editorElement}
   </div>
   <div id="buttons">
     <div id="upload-button" style="display:none">
@@ -70,7 +70,8 @@ module.exports = function (state, emit) {
     window.location = "/"
   }
   function upload(e) {
-    const records = state.engine.getRecords();
-    emit("upload", { records, startTime, name: state.sessionName })
+    emit("getRecords", (records) =>
+      emit("upload", { records, startTime, name: state.sessionName })
+    );
   }
 };
