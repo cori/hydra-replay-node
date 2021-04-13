@@ -12,7 +12,4 @@ module.exports = {
   notFound: function () {
     return html`<li>no recording yet</li>`;
   },
-  loading: function () {
-    html`<li>loading...</li>`;
-  }
 }

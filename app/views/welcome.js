@@ -3,8 +3,14 @@ const html = require("choo/html");
 
 // export module
 module.exports = function (state, emit) {
+  // state.sessionDom = html`<li>loading...</li>`;
+  if (state.sessions === undefined) {
+    // !! it renders so be careful with inf loop
+    emit("loadSessions");
+  }
   emit('DOMTitleChange', "Hydra↺Replay");
   emit("stop"); // if any
+
   let startButton = html`
     <button id="startbutton" style="visibility:hidden" onclick=${go}>go!</button>
   `;
