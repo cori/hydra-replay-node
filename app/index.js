@@ -30,7 +30,7 @@ app.route("/", views.welcome);
 app.route("#:mode", views.editor);
 app.route("#:mode/:page", views.editor);
 
-app.state.engine = new Engine({ state: app.state, emit: app.emitter.emit, defaultCode: "" });
+app.state.engine = new Engine({ state: app.state, emit: app.emitter.emit });
 
 app.emitter.on("render", () => {
   app.state.engine.initRecorder("");
@@ -99,8 +99,8 @@ app.emitter.on("upload", (data) => {
     .catch(err => console.log('oh no!'))
 })
 
+app.state.sessionDom = new views.session.loading();
 app.emitter.on("loadSessions", () => {
-  app.state.sessionDom = [html`<li>loading...</li>`];
   fetch('/api/get/list')
     .then(response => response.json())
     .then(data => {
@@ -108,10 +108,10 @@ app.emitter.on("loadSessions", () => {
       console.log(app.state.sessions)
       app.state.sessionDom = [];
       for (const session of app.state.sessions) {
-        app.state.sessionDom.push(new views.session(session));
+        app.state.sessionDom.push(new views.session.entry(session));
       }
       if (app.state.sessions.length == 0) {
-        app.state.sessionDom.push(new views.session());
+        app.state.sessionDom.push(new views.session.notFound());
       }
       app.emitter.emit("render");
     });
