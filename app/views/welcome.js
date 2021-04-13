@@ -36,7 +36,7 @@ module.exports = function (state, emit) {
     const name = document.getElementById("name-field").value;
     if (name.length > 0) {
       state.sessionName = name;
-      window.location = "#editor";
+      window.location = "#new";
     }
   }
 };

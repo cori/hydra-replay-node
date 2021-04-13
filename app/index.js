@@ -43,7 +43,7 @@ app.emitter.on("loadSessions", () => {
         app.state.sessionDom.push(
           html`
        <li><p class="session-name">${session.name} <!-- at ${new Date(session.startTime)} --></p>
-       <p class="session-link"> <a href="#${session._id}/remix">⏩play&remix🔄</a></p>
+       <p class="session-link"> <a href="#remix/${session._id}">⏩play&remix🔄</a></p>
        <div class="session-break"></div></li>
      `
         );
@@ -66,16 +66,11 @@ app.emitter.emit("loadSessions");
 const views = {
   welcome: require("./views/welcome.js"),
   editor: require("./views/editor.js"),
-  replay: require("./views/replay.js"),
 }
 
 app.route("/", views.welcome);
-app.route("#editor", views.editor);
-app.route("#:page", views.replay);
-app.route("#:page/:mode", views.replay);
+app.route("#:mode", views.editor);
+app.route("#:mode/:page", views.editor);
 
 // start app
 app.mount("#choomount");
-
-console.log("!main", views.welcome);
-
