@@ -27,6 +27,14 @@ app.emitter.on("render", () => {
   app.state.engine.initRecorder("");
 });
 
+app.emitter.on("updateStartEditButton", (name) => {
+  if (name.length > 0) {
+    document.getElementById("startbutton").style.visibility = "inherit";
+  } else {
+    document.getElementById("startbutton").style.visibility = "hidden";
+  }
+})
+
 app.emitter.on("upload", (data) => {
   superagent
   .post('/api/set/session')

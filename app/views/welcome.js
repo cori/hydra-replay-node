@@ -25,12 +25,7 @@ module.exports = function (state, emit) {
   `;
   function updateButton(e) {
     const name = e.target.value;
-    const lastStartButton = startButton;
-    if (name.length > 0) {
-      document.getElementById("startbutton").style.visibility = "inherit";
-    } else {
-      document.getElementById("startbutton").style.visibility = "hidden";
-    }
+    emit("updateStartEditButton", name);
   }
   function go(e) {
     const name = document.getElementById("name-field").value;
