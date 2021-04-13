@@ -44,13 +44,12 @@ const getCurrentBlock = function(cm) {
 };
 
 const commands = {
-  evalAll: ({ e, cm, hydra }) => {
+  evalAll: ({ cm, engine }) => {
     const code = cm.getValue();
     flashCode(cm);
-    // hydra.eval(code);
-    eval(code);
+    engine.exec(code);
   },
-  toggleEditor: ({ e, cm, hydra }) => {
+  toggleEditor: ({ cm, engine }) => {
     const editors = document.getElementById("editors");
     if (editors.style.visibility == "hidden") {
       editors.style.visibility = "visible";
@@ -58,26 +57,23 @@ const commands = {
       editors.style.visibility = "hidden";
     }
   },
-  evalLine: ({ e, cm, hydra }) => {
+  evalLine: ({ cm, engine }) => {
     const code = getLine(cm);
-    // hydra.eval(code);
-    eval(code);
+    engine.exec(code);
   },
-  toggleComment: ({ e, cm, hydra }) => {
+  toggleComment: ({ cm, engine }) => {
     cm.toggleComment();
   },
-  evalBlock: ({ e, cm, hydra }) => {
+  evalBlock: ({ cm, engine }) => {
     const code = getCurrentBlock(cm);
-    console.log(code);
-    // hydra.eval(code);
-    eval(code);
+    engine.exec(code);
   }
 };
 
 class Keymaps {
-  constructor({ cm, handler, hydra }) {
+  constructor({ cm, handler, engine }) {
     this.cm = cm;
-    this.hydra = hydra;
+    this.engine = engine;
     // enable capturing in text area
     hotkeys.filter = function(event) {
       return true;
@@ -89,7 +85,7 @@ class Keymaps {
       if (hk.enabled && typeof commands[commandName] === "function") {
         hotkeys(hk.key, function(e, hotkeyHandler) {
           e.preventDefault();
-          commands[commandName]({ e, cm, hydra });
+          commands[commandName]({ cm, engine });
           handler({ key: hk.key, name: commandName });
         });
       }
@@ -97,7 +93,7 @@ class Keymaps {
   }
   exec(cm, name) {
     if (commands[name] !== undefined) {
-      commands[name]({ cm, hydra: this.hydra });
+      commands[name]({ cm, engine: this.engine });
     }
   }
 }

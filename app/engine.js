@@ -24,7 +24,7 @@ class Engine {
       this.codeRecorder.recordExtraActivity({ key, name });
     };
 
-    this.keymaps = new Keymaps({ cm: this.cm, handler: keyHandler, hydra: this.hydra });
+    this.keymaps = new Keymaps({ cm: this.cm, handler: keyHandler, engine: this });
 
     // // overwrite hydra mouse :o
     // var mouse = require("./mouse.js");
@@ -57,11 +57,15 @@ class Engine {
       this.codePlayer.pause();
     }
   }
-  endOfRecord() {
-    this.codeRecorder.recordExtraActivity({ endOfRecord: true });
-  }
   onEnd(func) {
     this.codePlayer.setOnEndedHandler(func);
+  }
+  exec(code) {
+    try {
+      eval(code);
+    } catch (e) {
+      console.log(e);
+    }
   }
   getEditor() {
     // this.recorderCm.focus();
