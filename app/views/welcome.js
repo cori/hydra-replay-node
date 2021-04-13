@@ -26,7 +26,7 @@ module.exports = function (state, emit) {
   function go(e) {
     if (name.length > 0) {
       state.sessionName = name;
-      window.location = "#new";
+      emit("pushState", "/#new");
     }
   }
 

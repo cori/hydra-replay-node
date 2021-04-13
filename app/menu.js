@@ -42,7 +42,7 @@ module.exports = function (state, emitter) {
         if (!res.ok) return console.log('oh no!')
         console.log('request ok \o/')
         // emit("loadSessions");
-        // // emit("pushState", "/");
+        // emit("pushState", "/");
         window.location = "/"
       })
       .catch(err => console.log('oh no!'))

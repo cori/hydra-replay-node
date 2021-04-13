@@ -34,7 +34,6 @@ module.exports = function (state, emit) {
   else {
     state.playingMessage = "starting...";
     if (state.sessionName === undefined) {
-      // emit("replaceState", "/");
       window.location = "/"
     }
     // state.sessionName = session.name;
@@ -71,7 +70,7 @@ module.exports = function (state, emit) {
   </div>
   </div>`;
   function back() {
-    window.location = "/"
+    emit("pushState", "/");
   }
   function upload(e) {
     emit("getRecords", (records) =>
