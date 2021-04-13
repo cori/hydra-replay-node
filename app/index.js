@@ -25,7 +25,7 @@ const views = {
 
 app.route("/", views.welcome);
 app.route("#:mode", views.editor);
-app.route("#:mode/:page", views.editor);
+app.route("#:mode/:id", views.editor);
 
 app.use(require("./engine.js"));
 app.use(require("./menu.js"));

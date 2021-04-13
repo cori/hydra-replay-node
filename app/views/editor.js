@@ -13,7 +13,7 @@ module.exports = function (state, emit) {
     // not ok
   }
   const remix = state.params.mode == "remix";
-  const id = state.params.page;
+  const id = state.params.id;
   let playingMessage;
 
   emit("initPlayer", "");
