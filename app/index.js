@@ -37,25 +37,26 @@ app.emitter.on("updateStartEditButton", (name) => {
 
 app.emitter.on("upload", (data) => {
   superagent
-  .post('/api/set/session')
-  .send(data)
-  .end((err, res) => {
-    if (err) {
-      console.log('error posting sketch', err)
-    } else {
-      console.log('posted')
-    }
-    // emit("loadSessions");
-    // // emit("pushState", "/");
-    window.location = "/"
-  })
+    .post('/api/set/session')
+    .send(data)
+    .end((err, res) => {
+      if (err) {
+        console.log('error posting sketch', err)
+      } else {
+        console.log('posted')
+      }
+      // emit("loadSessions");
+      // // emit("pushState", "/");
+      window.location = "/"
+    })
 })
 
 app.emitter.on("loadSessions", () => {
   app.state.sessionDom = [html`<li>loading...</li>`];
-  superagent.get(`/api/get/list`)
-    .end((err, res) => {
-      app.state.sessions = JSON.parse(res.text);
+  fetch('/api/get/list')
+    .then(response => response.json())
+    .then(data => {
+      app.state.sessions = data;
       console.log(app.state.sessions)
       app.state.sessionDom = [];
       let i = 0;

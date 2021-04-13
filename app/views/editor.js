@@ -2,7 +2,6 @@
 const html = require("choo/html");
 
 const defaultCode = require("../default-code.js");
-const superagent = require('superagent');
 
 // export module
 module.exports = function (state, emit) {
@@ -20,9 +19,10 @@ module.exports = function (state, emit) {
   state.engine.initPlayer("");
 
   if (remix) {
-    superagent.get(`/api/get/session/${id}`)
-      .end((err, res) => {
-        const session = JSON.parse(res.text);
+    fetch(`/api/get/session/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        const session = data;
         state.sessionName = session.name;
         state.engine.setRecords(session.records);
         state.engine.play();
