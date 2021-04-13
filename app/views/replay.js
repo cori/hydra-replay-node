@@ -37,6 +37,15 @@ module.exports = function (state, emit) {
     document.getElementById("playing-message").innerText = `replaying ${state.sessionName}`;
     // playingMessage = `replaying ${state.sessionName}`;
     // emit("render");
+    state.engine.onEval((success, e) => {
+      document.getElementById("editor-console-message").innerText = `${e !== undefined ? e : ""}`;
+      if (!success) {
+        document.getElementById("editor-console-message").className = "alert";
+      }
+      else {
+        document.getElementById("editor-console-message").className = "";
+      }
+    })
     state.engine.onEnd(() => {
       console.log("finished")
       document.getElementById("playing-message").style.display = "none";
@@ -69,9 +78,12 @@ module.exports = function (state, emit) {
     <a onclick=${back}>back to top!</a>
   </div>
   </div>
+  <div id="editor-console">
+  <span id="editor-console-message"></span>
+  </div>
   </div>`;
   function back() {
-    window.location="/"
+    window.location = "/"
   }
   function upload(e) {
     // console.log(e.target.innerText)
@@ -82,6 +94,6 @@ module.exports = function (state, emit) {
     }
     emit("loadSessions");
     // emit("pushState", "/");
-    window.location="/"
+    window.location = "/"
   }
 };

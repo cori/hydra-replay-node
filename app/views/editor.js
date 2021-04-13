@@ -9,9 +9,18 @@ module.exports = function (state, emit) {
   console.log(state.sessionName);
   if (state.sessionName === undefined) {
     // emit("replaceState", "/");
-    window.location="/"
-    
+    window.location = "/"
   }
+
+  state.engine.onEval((success, e) => {
+    document.getElementById("editor-console-message").innerText = `${e !== undefined ? e : ""}`;
+    if (!success) {
+      document.getElementById("editor-console-message").className = "alert";
+    }
+    else {
+      document.getElementById("editor-console-message").className = "";
+    }
+  })
 
   return html`
     <div>
@@ -27,20 +36,23 @@ module.exports = function (state, emit) {
         <a onclick=${back}>back to top!</a>
       </div>
       </div>
+      <div id="editor-console">
+      <span id="editor-console-message"></span>
+      </div>
       </div>
   `;
   function back() {
-    window.location="/"
+    window.location = "/"
   }
   function upload(e) {
     // console.log(e.target.innerText)
     // state.engine.playback(true);
     const records = state.engine.getRecords();
-    if(JSON.parse(records).length > 3) {
+    if (JSON.parse(records).length > 3) {
       state.socket.emit("save session", { name: state.sessionName, records, startTime });
     }
     emit("loadSessions");
     // emit("replaceState", "/");
-    window.location="/"
+    window.location = "/"
   }
 };

@@ -103,6 +103,19 @@ span[role=presentation] {
   background-color: rgba(255, 255, 255, 0.5);
 }
 
+#editor-console {
+  color: #000000;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.alert {
+  color: crimson;
+}
+
 #buttons {
   color: #000000;
   position: absolute;

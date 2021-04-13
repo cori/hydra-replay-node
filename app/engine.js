@@ -60,11 +60,20 @@ class Engine {
   onEnd(func) {
     this.codePlayer.setOnEndedHandler(func);
   }
+  onEval(func) {
+    this.onEvalHandler = func;
+  }
   exec(code) {
     try {
-      eval(code);
+      const ret = eval(code);
+      if (this.onEvalHandler) {
+        this.onEvalHandler(true, ret);
+      }
     } catch (e) {
       console.log(e);
+      if (this.onEvalHandler) {
+        this.onEvalHandler(false, e);
+      }
     }
   }
   getEditor() {
