@@ -70,6 +70,7 @@ module.exports = function (state, emit) {
   </div>
   </div>`;
   function back() {
+    emit("stop");
     emit("pushState", "/");
   }
   function upload(e) {
