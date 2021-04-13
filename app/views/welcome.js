@@ -9,11 +9,7 @@ module.exports = function (state, emit) {
     emit("loadSessions");
   }
   emit('DOMTitleChange', "Hydra↺Replay");
-  emit("stop"); // if any
 
-  let startButton = html`
-    <button id="startbutton" style="visibility:hidden" onclick=${go}>go!</button>
-  `;
   // let start = html`<a href="/#editor">Start new session</a>`;
   return html`
     <div class="welcome">
@@ -21,7 +17,7 @@ module.exports = function (state, emit) {
       <div class="menu-start">Start new session</div>
       <div class="menu-input"><input type="text" id="name-field" oninput=${updateButton}
       name="session-name" placeholder="title or your name" />
-        ${startButton}
+        <button onclick=${go}>go!</button>
       </div>
       <div class="menu-replay">Replay Session</div>
       <ul>
@@ -29,15 +25,16 @@ module.exports = function (state, emit) {
       </ul>
     </div>
   `;
-  function updateButton(e) {
-    const name = e.target.value;
-    emit("updateStartEditButton", name);
-  }
   function go(e) {
     const name = document.getElementById("name-field").value;
     if (name.length > 0) {
       state.sessionName = name;
       window.location = "#new";
     }
+  }
+
+  function updateButton(e) {
+    const name = e.target.value;
+    emit("updateStartEditButton", name);
   }
 };

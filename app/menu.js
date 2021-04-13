@@ -7,14 +7,6 @@ module.exports = function (state, emitter) {
     emitter.emit("initRecorder", "");
   });
   
-  emitter.on("updateStartEditButton", (name) => {
-    if (name.length > 0) {
-      document.getElementById("startbutton").style.visibility = "inherit";
-    } else {
-      document.getElementById("startbutton").style.visibility = "hidden";
-    }
-  })
-  
   emitter.on("getSession", (id, done) => {
     fetch(`/api/get/session/${id}`)
       .then(response => response.json())
