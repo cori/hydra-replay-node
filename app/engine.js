@@ -76,7 +76,7 @@ module.exports = function (state, emitter) {
     });
   }
   function setupCanvas() {
-    const canvasElement = html`<canvas></canvas>`;
+    canvasElement = html`<canvas></canvas>`;
     canvasElement.width = window.innerWidth;
     canvasElement.height = window.innerHeight;
     canvasElement.style.width = "100%";
