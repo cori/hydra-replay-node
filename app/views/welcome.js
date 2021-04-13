@@ -36,6 +36,5 @@ module.exports = function (state, emit) {
 
   function updateButton(e) {
     name = e.target.value;
-    emit("updateStartEditButton", name);
   }
 };
