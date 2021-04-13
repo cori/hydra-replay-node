@@ -22,6 +22,7 @@ module.exports = function (state, emit) {
       <ul>
         ${state.sessionDom}
       </ul>
+      <div>made by n; shout out to <a href="https://hydra.ojack.xyz/">Hydra</a> and <a href="https://live-coding-archive.web.app/liCoHome">LiCo</a></div>
     </div>
   `;
   function go(e) {
