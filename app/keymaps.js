@@ -9,6 +9,11 @@ const flashCode = function(cm, start, end) {
   setTimeout(() => marker.clear(), 300);
 };
 
+const getAll = function(cm) {
+  flashCode(cm);
+  return cm.getValue();
+}
+
 const getLine = function(cm) {
   var c = cm.getCursor();
   var s = cm.getLine(c.line);
@@ -45,8 +50,7 @@ const getCurrentBlock = function(cm) {
 
 const commands = {
   evalAll: ({ cm, emitter }) => {
-    const code = cm.getValue();
-    flashCode(cm);
+    const code = getAll(cm);
     emitter.emit("exec", code);
   },
   // toggleEditor: ({ cm, engine }) => {
