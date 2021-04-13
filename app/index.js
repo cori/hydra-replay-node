@@ -2,8 +2,6 @@
 const choo = require("choo");
 const html = require("choo/html");
 
-const superagent = require('superagent');
-
 const Engine = require("./engine.js");
 
 // initialize choo
@@ -36,19 +34,19 @@ app.emitter.on("updateStartEditButton", (name) => {
 })
 
 app.emitter.on("upload", (data) => {
-  superagent
-    .post('/api/set/session')
-    .send(data)
-    .end((err, res) => {
-      if (err) {
-        console.log('error posting sketch', err)
-      } else {
-        console.log('posted')
-      }
+  const headers = new Headers({ 'Content-Type': 'application/json' })
+  let body = {}
+  for (const key in data) body[key] = data[key]
+  body = JSON.stringify(body)
+  fetch('/api/set/session', { method: 'POST', body, headers })
+    .then(res => {
+      if (!res.ok) return console.log('oh no!')
+      console.log('request ok \o/')
       // emit("loadSessions");
       // // emit("pushState", "/");
       window.location = "/"
     })
+    .catch(err => console.log('oh no!'))
 })
 
 app.emitter.on("loadSessions", () => {
