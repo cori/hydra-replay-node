@@ -18,18 +18,16 @@ module.exports = function (state, emit) {
 
   state.engine.initPlayer("");
 
-  if (remix) {
-    fetch(`/api/get/session/${id}`)
-      .then(response => response.json())
-      .then(data => {
-        const session = data;
-        state.sessionName = session.name;
-        state.engine.setRecords(session.records);
-        state.engine.play();
+  state.engine.onEnd(() => {
+    emit("playbackEnd")
+  });
 
-        state.sessionName = "Re: " + state.sessionName;
-        setParams();
-      });
+  state.engine.onEval((success, e) => {
+    emit("eval", { success, e });
+  })
+
+  if (remix) {
+    emit("getSession", id);
   }
   else {
     if (state.sessionName === undefined) {
@@ -41,33 +39,8 @@ module.exports = function (state, emit) {
       state.engine.setRecords(defaultCode.records);
       state.engine.play();
 
-      setParams();
+      emit("loadEditor");
     }, 100);
-  }
-
-  function setParams() {
-    emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
-
-    let player = state.engine.codePlayer;
-    console.log(player.getDuration())
-    document.getElementById("playing-message").innerText = `replaying ${state.sessionName}`;
-
-    state.engine.onEnd(() => {
-      console.log("finished")
-      document.getElementById("playing-message").style.display = "none";
-      state.engine.switchToRecorder();
-      document.getElementById("upload-button").style.display = "inherit";
-    });
-
-    state.engine.onEval((success, e) => {
-      document.getElementById("editor-console-message").innerText = `${e !== undefined ? e : ""}`;
-      if (!success) {
-        document.getElementById("editor-console-message").className = "alert";
-      }
-      else {
-        document.getElementById("editor-console-message").className = "";
-      }
-    })
   }
 
   return html`
