@@ -14,7 +14,7 @@ module.exports = function (state, emit) {
   }
   const remix = state.params.mode == "remix";
   const id = state.params.page;
-  let playingMessage = `replaying...`;
+  let playingMessage;
 
   emit("initPlayer", "");
 
@@ -27,9 +27,20 @@ module.exports = function (state, emit) {
   })
 
   if (remix) {
-    emit("getSession", id);
+    playingMessage = "replaying...";
+    emit("getSession", id, (data) => {
+      const session = data;
+      state.sessionName = session.name;
+      emit("setRecords", session.records);
+      emit("play");
+
+      state.sessionName = "Re: " + state.sessionName;
+      emit("loadEditor", playingMessage);
+
+    });
   }
   else {
+    playingMessage = "starting...";
     if (state.sessionName === undefined) {
       // emit("replaceState", "/");
       window.location = "/"
@@ -39,7 +50,7 @@ module.exports = function (state, emit) {
       emit("setRecords", defaultCode.records);
       emit("play");
 
-      emit("loadEditor");
+      emit("loadEditor", playingMessage);
     }, 100);
   }
 

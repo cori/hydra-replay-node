@@ -15,24 +15,18 @@ module.exports = function (state, emitter) {
     }
   })
   
-  emitter.on("getSession", (id) => {
+  emitter.on("getSession", (id, done) => {
     fetch(`/api/get/session/${id}`)
       .then(response => response.json())
       .then(data => {
-        const session = data;
-        state.sessionName = session.name;
-        emitter.emit("setRecords", session.records);
-        emitter.emit("play");
-  
-        state.sessionName = "Re: " + state.sessionName;
-        emitter.emit("loadEditor");
+        done(data);
       });
   });
   
-  emitter.on("loadEditor", () => {
+  emitter.on("loadEditor", (playingMessage) => {
     emitter.emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
   
-    document.getElementById("playing-message").innerText = `replaying ${state.sessionName}`;
+    document.getElementById("playing-message").innerText = `${playingMessage} ${state.sessionName}`;
   });
   
   emitter.on("playbackEnd", () => {
