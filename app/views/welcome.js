@@ -10,6 +10,8 @@ module.exports = function (state, emit) {
   }
   emit('DOMTitleChange', "Hydra↺Replay");
 
+  let name = "";
+
   // let start = html`<a href="/#editor">Start new session</a>`;
   return html`
     <div class="welcome">
@@ -26,7 +28,6 @@ module.exports = function (state, emit) {
     </div>
   `;
   function go(e) {
-    const name = document.getElementById("name-field").value;
     if (name.length > 0) {
       state.sessionName = name;
       window.location = "#new";
@@ -34,7 +35,7 @@ module.exports = function (state, emit) {
   }
 
   function updateButton(e) {
-    const name = e.target.value;
+    name = e.target.value;
     emit("updateStartEditButton", name);
   }
 };
