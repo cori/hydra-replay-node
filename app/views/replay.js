@@ -34,7 +34,8 @@ module.exports = function (state, emit) {
     let player = state.engine.codePlayer;
     console.log(player.getDuration())
     state.sessionName = "Re: " + state.sessionName;
-    playingMessage = `replaying ${state.sessionName}`;
+    document.getElementById("playing-message").innerText = `replaying ${state.sessionName}`;
+    // playingMessage = `replaying ${state.sessionName}`;
     // emit("render");
     state.engine.onEnd(() => {
       console.log("finished")
