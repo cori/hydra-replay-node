@@ -19,6 +19,17 @@ function notFound() {
   `;
 }
 
+// import a template
+const views = {
+  welcome: require("./views/welcome.js"),
+  editor: require("./views/editor.js"),
+  session: require("./views/session.js"),
+}
+
+app.route("/", views.welcome);
+app.route("#:mode", views.editor);
+app.route("#:mode/:page", views.editor);
+
 app.state.engine = new Engine({ state: app.state, emit: app.emitter.emit, defaultCode: "" });
 
 app.emitter.on("render", () => {
@@ -96,39 +107,17 @@ app.emitter.on("loadSessions", () => {
       app.state.sessions = data;
       console.log(app.state.sessions)
       app.state.sessionDom = [];
-      let i = 0;
       for (const session of app.state.sessions) {
-        app.state.sessionDom.push(
-          html`
-       <li><p class="session-name">${session.name} <!-- at ${new Date(session.startTime)} --></p>
-       <p class="session-link"> <a href="#remix/${session._id}">⏩play&remix🔄</a></p>
-       <div class="session-break"></div></li>
-     `
-        );
-        i++;
+        app.state.sessionDom.push(new views.session(session));
       }
       if (app.state.sessions.length == 0) {
-        app.state.sessionDom.push(
-          html`
-       <li>no recording yet</li>
-     `
-        );
+        app.state.sessionDom.push(new views.session());
       }
       app.emitter.emit("render");
     });
 });
 
 app.emitter.emit("loadSessions");
-
-// import a template
-const views = {
-  welcome: require("./views/welcome.js"),
-  editor: require("./views/editor.js"),
-}
-
-app.route("/", views.welcome);
-app.route("#:mode", views.editor);
-app.route("#:mode/:page", views.editor);
 
 // start app
 app.mount("#choomount");
