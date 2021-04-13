@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
 const port = process.env.PORT || 3000;
 
 var Datastore = require("nedb"),
@@ -12,6 +11,9 @@ var Datastore = require("nedb"),
 server.listen(port, function () {
   console.log("Server listening at port %d", port);
 });
+
+app.use(express.urlencoded({extended:false}));
+app.use(express.json());
 
 app.use(express.static("public"));
 
@@ -31,9 +33,16 @@ app.get('/api/get/list', (req, res) => {
   });
 })
 
-io.on("connection", function (socket) {
-  socket.on("save session", function (data) {
-    db.insert(data, function (err, added) {
-    });
-  });
-});
+app.post('/api/set/session', (req, res) => {
+  db.insert({
+    name: req.body.name,
+    records: req.body.records,
+    startTime: req.body.startTime
+  }, function (err, added) {
+    if (err) {
+      res.sendStatus(500)
+    } else {
+      res.send("added")
+    }
+  })
+})

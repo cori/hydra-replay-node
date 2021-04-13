@@ -1,5 +1,3 @@
-const socket = require('socket.io-client')();
-
 // import choo
 const choo = require("choo");
 const html = require("choo/html");
@@ -23,7 +21,6 @@ function notFound() {
   `;
 }
 
-app.state.socket = socket;
 app.state.engine = new Engine({ state: app.state, defaultCode: "" });
 
 app.emitter.on("render", () => {

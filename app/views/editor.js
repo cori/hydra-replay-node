@@ -98,11 +98,18 @@ module.exports = function (state, emit) {
   }
   function upload(e) {
     const records = state.engine.getRecords();
-    if (JSON.parse(records).length > 3) {
-      state.socket.emit("save session", { name: state.sessionName, records, startTime });
-    }
-    emit("loadSessions");
-    // emit("pushState", "/");
-    window.location = "/"
+    superagent
+      .post('/api/set/session')
+      .send({ name: state.sessionName, records, startTime })
+      .end((err, res) => {
+        if (err) {
+          console.log('error posting sketch', err)
+        } else {
+          console.log('posted')
+        }
+        // emit("loadSessions");
+        // // emit("pushState", "/");
+        window.location = "/"
+      })
   }
 };
