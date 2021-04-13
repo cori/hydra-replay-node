@@ -24,11 +24,14 @@ module.exports = function (state, emit) {
       </div>
       <div id="backlink">
       <div id="back-message">
-        <a href="/">back to top!</a>
+        <a onclick=${back}>back to top!</a>
       </div>
       </div>
       </div>
   `;
+  function back() {
+    window.location="/"
+  }
   function upload(e) {
     // console.log(e.target.innerText)
     // state.engine.playback(true);
