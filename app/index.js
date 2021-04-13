@@ -24,11 +24,10 @@ function notFound() {
 }
 
 app.state.socket = socket;
-app.state.defaultCode = `osc(50,0.1,1.5).out()`;
-app.state.engine = new Engine({ state: app.state, defaultCode: app.state.defaultCode });
+app.state.engine = new Engine({ state: app.state, defaultCode: "" });
 
 app.emitter.on("render", () => {
-  app.state.engine.initRecorder(app.state.defaultCode);
+  app.state.engine.initRecorder("");
 });
 
 app.emitter.on("loadSessions", () => {

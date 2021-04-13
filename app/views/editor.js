@@ -1,6 +1,7 @@
 // import choo's template helper
 const html = require("choo/html");
 
+const defaultCode = require("../default-code.js");
 const superagent = require('superagent');
 
 // export module
@@ -16,31 +17,17 @@ module.exports = function (state, emit) {
   const id = state.params.page;
   let playingMessage = `replaying...`;
 
-  let session;
-  // setTimeout(() => {
-  //   state.engine.initRecorder(state.defaultCode); //NOOOO
-  // }, 1000);
   state.engine.initPlayer("");
 
   if (remix) {
     superagent.get(`/api/get/session/${id}`)
       .end((err, res) => {
-        session = JSON.parse(res.text);
+        const session = JSON.parse(res.text);
         state.sessionName = session.name;
         state.engine.setRecords(session.records);
         state.engine.play();
 
-        let player = state.engine.codePlayer;
-        console.log(player.getDuration())
         state.sessionName = "Re: " + state.sessionName;
-        document.getElementById("playing-message").innerText = `replaying ${state.sessionName}`;
-
-        state.engine.onEnd(() => {
-          console.log("finished")
-          document.getElementById("playing-message").style.display = "none";
-          state.engine.switchToRecorder();
-          document.getElementById("upload-button").style.display = "inherit";
-        });
         setParams();
       });
   }
@@ -49,16 +36,28 @@ module.exports = function (state, emit) {
       // emit("replaceState", "/");
       window.location = "/"
     }
+    // state.sessionName = session.name;
     setTimeout(() => {//BADBADBADBAD
-      document.getElementById("playing-message").style.display = "none";
-      state.engine.switchToRecorder();
-      document.getElementById("upload-button").style.display = "inherit";
-    }, 1000);
-    setParams();
+      state.engine.setRecords(defaultCode.records);
+      state.engine.play();
+
+      setParams();
+    }, 100);
   }
 
   function setParams() {
     emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
+
+    let player = state.engine.codePlayer;
+    console.log(player.getDuration())
+    document.getElementById("playing-message").innerText = `replaying ${state.sessionName}`;
+
+    state.engine.onEnd(() => {
+      console.log("finished")
+      document.getElementById("playing-message").style.display = "none";
+      state.engine.switchToRecorder();
+      document.getElementById("upload-button").style.display = "inherit";
+    });
 
     state.engine.onEval((success, e) => {
       document.getElementById("editor-console-message").innerText = `${e !== undefined ? e : ""}`;
