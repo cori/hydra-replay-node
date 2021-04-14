@@ -3,6 +3,7 @@ const defaultCode = require("./default-code.js");
 
 module.exports = function (state, emitter) {
   emitter.on("setupEditor", (id) => {
+    state.editorConsole = html`<span id="editor-console-message"></span>`;
     state.uploadButton = undefined;
     const remix = id !== undefined;
     if (remix) {

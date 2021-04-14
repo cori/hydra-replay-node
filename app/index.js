@@ -39,7 +39,6 @@ app.emitter.on("DOMContentLoaded", () => {
     app.emitter.emit("navigate"); // for initialization
   }
 })
-app.state.editorConsole = html`<span id="editor-console-message"></span>`;
 
 // start app
 app.mount("#choomount");
