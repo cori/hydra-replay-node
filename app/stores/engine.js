@@ -94,7 +94,8 @@ module.exports = function (state, emitter) {
 
   emitter.on("engine:initRecorder", () => {
     setupRecorder();
-    hydra.eval("hush(); solid().out()");
+    hydra.eval("hush(); solid().out();");
+    s0.init({ src: state.mouse.canvasElement })
     cm.setOption("readOnly", false);
     cm.setValue("");
     cm.refresh();

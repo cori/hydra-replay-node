@@ -28,6 +28,7 @@ app.route("#:mode", views.editor);
 app.route("#:mode/:id", views.editor);
 
 app.use(require("./stores/engine.js"));
+app.use(require("./stores/mouse-canvas.js"));
 app.use(require("./stores/routes.js"));
 app.use(require("./stores/editor.js"));
 app.use(require("./stores/requests.js"));
