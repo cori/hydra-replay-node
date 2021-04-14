@@ -30,5 +30,13 @@ app.route("#:mode/:id", views.editor);
 app.use(require("./stores/engine.js"));
 app.use(require("./stores/menu.js"));
 
+let inited = true;
+app.emitter.on("DOMContentLoaded", () => {
+  if(inited) {
+    inited = false;
+    app.emitter.emit("navigate"); // for initialization
+  }
+})
+
 // start app
 app.mount("#choomount");

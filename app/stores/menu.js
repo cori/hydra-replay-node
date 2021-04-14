@@ -8,6 +8,28 @@ module.exports = function (state, emitter) {
     emitter.emit("initRecorder");
   });
 
+  emitter.on("navigate", () => {
+    console.log(state.params);
+    if (state.params.mode === undefined || state.params.mode == "remix" || state.params.mode == "new") {
+      // ok
+    }
+    else {
+      emitter.emit("pushState", "/");
+      return;
+    }
+
+    if (state.params.mode === undefined) {
+      // top page
+      state.editorSetup = false;
+      emitter.emit("loadSessions");
+      emitter.emit('DOMTitleChange', "Hydra↺Replay");
+    }
+    if (state.params.mode == "remix" || state.params.mode == "new") {
+      // editor
+      
+    }
+  });
+
   emitter.on("setupEditor", (id) => {
     const remix = id !== undefined;
     if (remix) {
@@ -35,7 +57,7 @@ module.exports = function (state, emitter) {
 
       //wtf
       emitter.emit("setRecords", state.prevRecords);
-      emitter.emit("play");  
+      emitter.emit("play");
       emitter.emit("render");
     }
   })

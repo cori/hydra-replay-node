@@ -3,10 +3,6 @@ const html = require("choo/html");
 
 // export module
 module.exports = function (state, emit) {
-  state.editorSetup = false;
-  emit("loadSessions");
-  emit('DOMTitleChange', "Hydra↺Replay");
-
   let name = "";
 
   // let start = html`<a href="/#editor">Start new session</a>`;

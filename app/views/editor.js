@@ -4,12 +4,6 @@ const html = require("choo/html");
 // export module
 module.exports = function (state, emit) {
   state.startTime = +new Date;
-  if (state.params.mode == "remix" || state.params.mode == "new") {
-    // ok
-  }
-  else {
-    window.location = "/";
-  }
   const id = state.params.id;
 
   emit("initPlayer");
