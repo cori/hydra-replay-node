@@ -3,23 +3,6 @@ const html = require("choo/html");
 
 // export module
 module.exports = function (state, emit) {
-  state.startTime = +new Date;
-  const id = state.params.id;
-
-  emit("initPlayer");
-
-  if (state.editorSetup === undefined || state.editorSetup == false) {
-    emit("setupEditor", id);
-  }
-  else {
-    if(state.params.mode == "remix") {
-      // wtf
-      emit("setRecords", state.prevRecords);
-      emit("play");
-    }
-    emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
-  }
-
   return html`
   <div>
   <div id="canvas-container">${state.engine.canvasElement}</div>

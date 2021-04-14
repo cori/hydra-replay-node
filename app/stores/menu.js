@@ -10,7 +10,9 @@ module.exports = function (state, emitter) {
 
   emitter.on("navigate", () => {
     console.log(state.params);
-    if (state.params.mode === undefined || state.params.mode == "remix" || state.params.mode == "new") {
+    const isWelcome = state.params.mode === undefined;
+    const isEditor = state.params.mode == "remix" || state.params.mode == "new";
+    if (isWelcome || isEditor) {
       // ok
     }
     else {
@@ -18,15 +20,23 @@ module.exports = function (state, emitter) {
       return;
     }
 
-    if (state.params.mode === undefined) {
+    if (isWelcome) {
       // top page
       state.editorSetup = false;
       emitter.emit("loadSessions");
       emitter.emit('DOMTitleChange', "Hydra↺Replay");
     }
-    if (state.params.mode == "remix" || state.params.mode == "new") {
+    else if (isEditor) {
       // editor
-      
+      state.startTime = +new Date;
+      const id = state.params.id;
+
+      emitter.emit("initPlayer");
+
+      if (state.editorSetup === undefined || state.editorSetup == false) {
+        emitter.emit("setupEditor", id);
+      }
+      emitter.emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
     }
   });
 
@@ -43,6 +53,8 @@ module.exports = function (state, emitter) {
         state.playingMessage = `${state.playingMessage} ${state.sessionName}`;
         state.editorSetup = true;
         state.prevRecords = session.records;
+        emitter.emit("setRecords", state.prevRecords);
+        emitter.emit("play");
         emitter.emit("render");
       });
     }
