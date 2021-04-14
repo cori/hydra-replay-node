@@ -3,6 +3,8 @@ const html = require("choo/html");
 
 // export module
 module.exports = function (state, emit) {
+  emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
+
   return html`
   <div>
   <div id="canvas-container">${state.engine.canvasElement}</div>

@@ -33,10 +33,7 @@ module.exports = function (state, emitter) {
 
       emitter.emit("initPlayer");
 
-      if (state.editorSetup === undefined || state.editorSetup == false) {
-        emitter.emit("setupEditor", id);
-      }
-      emitter.emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
+      emitter.emit("setupEditor", id);
     }
   });
 
@@ -61,7 +58,7 @@ module.exports = function (state, emitter) {
     else {
       state.playingMessage = "starting...";
       if (state.sessionName === undefined) {
-        window.location = "/";
+        emitter.emit("pushState", "/");
       }
       state.playingMessage = `${state.playingMessage} ${state.sessionName}`;
       state.editorSetup = true;
@@ -107,18 +104,13 @@ module.exports = function (state, emitter) {
       .then(res => {
         if (!res.ok) return console.log('oh no!')
         console.log('request ok \o/')
-        // emit("loadSessions");
-        // emit("pushState", "/");
-        window.location = "/"
+        emitter.emit("loadSessions");
+        emitter.emit("pushState", "/");
       })
-      .catch(err => console.log('oh no!'))
+      .catch(err => console.log('oh no!', err))
   })
 
   emitter.on("loadSessions", () => {
-    const lastSessions = state.sessions;
-    if (lastSessions !== undefined) {
-      return;
-    }
     fetch('/api/get/list')
       .then(response => response.json())
       .then(data => {
@@ -133,14 +125,6 @@ module.exports = function (state, emitter) {
         }
 
         emitter.emit("render");
-        // // !! it renders so be careful with inf loop
-        // if (lastSessions !== undefined &&
-        //   state.sessions.every((el, i) => el._id === lastSessions[i]._id)) {
-        //   // no need to update
-        // }
-        // else {
-        //   emitter.emit("render");
-        // }
       });
   });
 }
