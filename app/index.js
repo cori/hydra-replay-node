@@ -29,6 +29,7 @@ app.route("#:mode/:id", views.editor);
 
 app.use(require("./stores/engine.js"));
 app.use(require("./stores/routes.js"));
+app.use(require("./stores/editor.js"));
 app.use(require("./stores/requests.js"));
 
 let inited = true;
@@ -38,6 +39,7 @@ app.emitter.on("DOMContentLoaded", () => {
     app.emitter.emit("navigate"); // for initialization
   }
 })
+app.state.editorConsole = html`<span id="editor-console-message"></span>`;
 
 // start app
 app.mount("#choomount");

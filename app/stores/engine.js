@@ -123,14 +123,10 @@ module.exports = function (state, emitter) {
   emitter.on("exec", (code) => {
     try {
       const ret = eval(code);
-      if (onEvalHandler) {
-        emitter.emit("showEvalOnMenu", { success: true, e: ret });
-      }
+      emitter.emit("showEvalOnMenu", { success: true, e: ret });
     } catch (e) {
       console.log(e);
-      if (onEvalHandler) {
-        emitter.emit("showEvalOnMenu", { success: false, e });
-      }
+      emitter.emit("showEvalOnMenu", { success: false, e });
     }
   });
   emitter.on("getRecords", () => {
@@ -138,5 +134,8 @@ module.exports = function (state, emitter) {
   });
   emitter.on("setRecords", (records) => {
     codePlayer.addOperations(records);
+  });
+  emitter.on("focus", () => {
+    cm.focus();
   });
 };

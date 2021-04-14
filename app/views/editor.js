@@ -3,7 +3,7 @@ const html = require("choo/html");
 // export module
 module.exports = function (state, emit) {
   emit('DOMTitleChange', `${state.sessionName} - Hydra↺Replay`);
-
+  
   return html`
   <div>
     <div id="canvas-container">${state.engine.canvasElement}</div>
@@ -20,7 +20,7 @@ module.exports = function (state, emit) {
       </div>
     </div>
     <div id="editor-console">
-      <span id="editor-console-message"></span>
+    ${'>>'} ${state.editorConsole}
     </div>
   </div>`;
   function back() {

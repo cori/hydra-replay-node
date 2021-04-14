@@ -104,6 +104,8 @@ span[role=presentation] {
 }
 
 #editor-console {
+  font-family: "VT323", monospace;
+  font-size: 14pt;
   color: #000000;
   position: absolute;
   bottom: 0;
