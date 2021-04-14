@@ -23,6 +23,7 @@ app.get('/api/get/session/:id', (req, res) => {
     data.startTime = session.startTime;
     data.name = session.name;
     data.records = session.records;
+    data.mouse = session.mouse;
     res.send(JSON.stringify(data));
   });
 })
@@ -37,7 +38,8 @@ app.post('/api/set/session', (req, res) => {
   db.insert({
     name: req.body.name,
     records: req.body.records,
-    startTime: req.body.startTime
+    startTime: req.body.startTime,
+    mouse: req.body.mouse
   }, function (err, added) {
     if (err) {
       res.sendStatus(500)

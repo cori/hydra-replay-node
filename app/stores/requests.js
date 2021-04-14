@@ -3,7 +3,7 @@ const session = require("../views/session.js");
 module.exports = function (state, emitter) {
   emitter.on("requests:upload", (data) => {
     const headers = new Headers({ 'Content-Type': 'application/json' });
-    let body = { records: state.records, startTime: state.startTime, name: state.sessionName };
+    let body = { records: state.records, startTime: state.startTime, name: state.sessionName, mouse: state.mouse.records };
     body = JSON.stringify(body);
     fetch('/api/set/session', { method: 'POST', body, headers })
       .then(res => {

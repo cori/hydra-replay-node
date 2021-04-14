@@ -34,7 +34,7 @@ module.exports = function (state, emitter) {
 
   keymaps = new Keymaps({ cm, handler: keyHandler, emitter });
 
-  state.engine = { editorElement, canvasElement };
+  state.engine = { editorElement, canvasElement, time: 0 };
 
   // // overwrite hydra mouse :o
   // var mouse = require("./mouse.js");
@@ -61,7 +61,7 @@ module.exports = function (state, emitter) {
     codePlayer = new CodePlay(cm, {
       maxDelay: 3000,
       autoplay: false,
-      speed: 2,
+      speed: state.speed,
       extraActivityHandler: activity => {
         if (activity.key !== undefined) {
           keymaps.exec(cm, activity);
@@ -141,5 +141,8 @@ module.exports = function (state, emitter) {
   });
   emitter.on("engine:clearEditor", () => {
     cm.setValue("");
+  });
+  emitter.on("engine:updateCurrentTime", () => {
+    state.engine.time = codePlayer.getCurrentTime();
   });
 };

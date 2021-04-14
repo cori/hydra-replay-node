@@ -16,8 +16,10 @@ module.exports = function (state, emitter) {
         state.playingMessage = html`<div id="playing-message">replaying... ${state.sessionName}</div>`;
         state.editorSetup = true;
         state.prevRecords = session.records;
+        state.mouse.prevRecords = session.mouse;
         emitter.emit("engine:setRecords", state.prevRecords);
         emitter.emit("engine:play");
+        emitter.emit("mouse:startRecord");
         emitter.emit("render");
       });
     }
@@ -33,11 +35,13 @@ module.exports = function (state, emitter) {
       //wtf
       emitter.emit("engine:setRecords", state.prevRecords);
       emitter.emit("engine:play");
+      emitter.emit("mouse:startRecord");
       emitter.emit("render");
     }
   });
 
   emitter.on("editor:playbackEnd", () => {
+    emitter.emit("mouse:stopPlay");
     if (state.params.mode == "remix") {
       state.sessionName = "Re: " + state.sessionName;
     }

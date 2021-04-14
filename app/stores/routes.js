@@ -19,6 +19,7 @@ module.exports = function (state, emitter) {
       state.editorSetup = false;
       emitter.emit("requests:loadSessions");
       emitter.emit("engine:clearEditor");
+      emitter.emit("mouse:stopRecord", () => { });
     }
     else if (isEditor) {
       // editor

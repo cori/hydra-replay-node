@@ -27,6 +27,8 @@ app.route("/", views.welcome);
 app.route("#:mode", views.editor);
 app.route("#:mode/:id", views.editor);
 
+app.state.speed = 2;
+
 app.use(require("./stores/engine.js"));
 app.use(require("./stores/mouse-canvas.js"));
 app.use(require("./stores/routes.js"));

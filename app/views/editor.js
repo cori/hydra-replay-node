@@ -29,6 +29,8 @@ module.exports = function (state, emit) {
   }
   function upload(e) {
     emit("engine:getRecords");
-    emit("requests:upload");
+    emit("mouse:stopRecord", () => {
+      emit("requests:upload");
+    });
   }
 };
