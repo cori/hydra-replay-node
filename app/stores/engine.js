@@ -28,8 +28,8 @@ module.exports = function (state, emitter) {
   // setupRecorder();
   setupCanvas();
 
-  const keyHandler = ({ key, name }) => {
-    codeRecorder.recordExtraActivity({ key, name });
+  const keyHandler = ({ key, name, cursor }) => {
+    codeRecorder.recordExtraActivity({ key, name, cursor });
   };
 
   keymaps = new Keymaps({ cm, handler: keyHandler, emitter });
@@ -64,7 +64,7 @@ module.exports = function (state, emitter) {
       speed: 2,
       extraActivityHandler: activity => {
         if (activity.key !== undefined) {
-          keymaps.exec(cm, activity.name);
+          keymaps.exec(cm, activity);
           codeRecorder.recordExtraActivity(activity);
           return true;
         }
