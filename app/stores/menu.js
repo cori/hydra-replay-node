@@ -24,7 +24,6 @@ module.exports = function (state, emitter) {
       // top page
       state.editorSetup = false;
       emitter.emit("loadSessions");
-      emitter.emit('DOMTitleChange', "Hydra↺Replay");
     }
     else if (isEditor) {
       // editor
@@ -96,19 +95,20 @@ module.exports = function (state, emitter) {
   });
 
   emitter.on("upload", (data) => {
-    const headers = new Headers({ 'Content-Type': 'application/json' })
-    let body = {}
-    for (const key in data) body[key] = data[key]
-    body = JSON.stringify(body)
-    fetch('/api/set/session', { method: 'POST', body, headers })
-      .then(res => {
-        if (!res.ok) return console.log('oh no!')
-        console.log('request ok \o/')
-        emitter.emit("loadSessions");
-        emitter.emit("pushState", "/");
-      })
-      .catch(err => console.log('oh no!', err))
-  })
+    emitter.emit("getRecords", (records) => {
+      const headers = new Headers({ 'Content-Type': 'application/json' });
+      let body = { records, startTime: state.startTime, name: state.sessionName };
+      body = JSON.stringify(body);
+      fetch('/api/set/session', { method: 'POST', body, headers })
+        .then(res => {
+          if (!res.ok) return console.log('oh no!')
+          console.log('request ok \o/')
+          emitter.emit("loadSessions");
+          emitter.emit("pushState", "/");
+        })
+        .catch(err => console.log('oh no!', err));
+    });
+  });
 
   emitter.on("loadSessions", () => {
     fetch('/api/get/list')

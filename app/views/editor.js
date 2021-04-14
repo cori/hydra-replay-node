@@ -33,8 +33,6 @@ module.exports = function (state, emit) {
     emit("pushState", "/");
   }
   function upload(e) {
-    emit("getRecords", (records) =>
-      emit("upload", { records, startTime: state.startTime, name: state.sessionName })
-    );
+    emit("upload");
   }
 };
