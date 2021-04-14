@@ -27,8 +27,8 @@ app.route("/", views.welcome);
 app.route("#:mode", views.editor);
 app.route("#:mode/:id", views.editor);
 
-app.use(require("./engine.js"));
-app.use(require("./menu.js"));
+app.use(require("./stores/engine.js"));
+app.use(require("./stores/menu.js"));
 
 // start app
 app.mount("#choomount");

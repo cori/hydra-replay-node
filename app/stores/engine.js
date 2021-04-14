@@ -7,7 +7,7 @@ require("codemirror/addon/hint/show-hint");
 require("codemirror/addon/selection/mark-selection");
 require("codemirror/addon/comment/comment");
 
-const { CodeRecord, CodePlay } = require("./codemirror-record.js");
+const { CodeRecord, CodePlay } = require("../codemirror-record.js");
 
 const Keymaps = require("./keymaps.js");
 

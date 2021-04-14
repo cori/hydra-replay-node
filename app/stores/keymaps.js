@@ -1,5 +1,5 @@
 const hotkeys = require("hotkeys-js");
-const mapping = require("./settings.json").keymaps;
+const mapping = require("../settings.json").keymaps;
 
 // https://github.com/ojack/hydra/blob/3dcbf85c22b9f30c45b29ac63066e4bbb00cf225/hydra-server/app/src/editor.js
 const flashCode = function(cm, start, end) {
