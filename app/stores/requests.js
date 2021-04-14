@@ -2,7 +2,6 @@ const session = require("../views/session.js");
 
 module.exports = function (state, emitter) {
   emitter.on("upload", (data) => {
-    emitter.emit("getRecords");
     const headers = new Headers({ 'Content-Type': 'application/json' });
     let body = { records: state.records, startTime: state.startTime, name: state.sessionName };
     body = JSON.stringify(body);
@@ -31,6 +30,14 @@ module.exports = function (state, emitter) {
         }
 
         emitter.emit("render");
+      });
+  });
+
+  emitter.on("getSession", (id, done) => {
+    fetch(`/api/get/session/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        done(data);
       });
   });
 }

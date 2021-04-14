@@ -33,6 +33,7 @@ module.exports = function (state, emit) {
     emit("pushState", "/");
   }
   function upload(e) {
+    emit("getRecords");
     emit("upload");
   }
 };

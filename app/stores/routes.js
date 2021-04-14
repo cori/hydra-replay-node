@@ -66,13 +66,6 @@ module.exports = function (state, emitter) {
       emitter.emit("play");
       emitter.emit("render");
     }
-  })
-  emitter.on("getSession", (id, done) => {
-    fetch(`/api/get/session/${id}`)
-      .then(response => response.json())
-      .then(data => {
-        done(data);
-      });
   });
 
   emitter.on("playbackEnd", () => {
