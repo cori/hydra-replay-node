@@ -1,4 +1,3 @@
-// import choo's template helper
 const html = require("choo/html");
 
 // export module
@@ -12,12 +11,8 @@ module.exports = function (state, emit) {
       ${state.engine.editorElement}
     </div>
     <div id="buttons">
-      <div id="upload-button" style="display:none">
-        continue editing and <button onclick="${upload}">upload</button>
-      </div>
-      <div id="playing-message">
-        ${state.playingMessage}
-      </div>
+      ${state.uploadButton ? state.uploadButton(upload) : ""}
+      ${state.playingMessage}
     </div>
     <div id="backlink">
       <div id="back-message">
