@@ -1,4 +1,3 @@
-const session = require("../views/session.js");
 const defaultCode = require("./default-code.js");
 
 module.exports = function (state, emitter) {

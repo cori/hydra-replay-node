@@ -7,26 +7,26 @@ module.exports = function (state, emit) {
 
   return html`
   <div>
-  <div id="canvas-container">${state.engine.canvasElement}</div>
-  <div id="editors">
-  ${state.engine.editorElement}
-  </div>
-  <div id="buttons">
-    <div id="upload-button" style="display:none">
-      continue editing and <button onclick="${upload}">upload</button>
+    <div id="canvas-container">${state.engine.canvasElement}</div>
+    <div id="editors">
+      ${state.engine.editorElement}
     </div>
-    <div id="playing-message">
-      ${state.playingMessage}
+    <div id="buttons">
+      <div id="upload-button" style="display:none">
+        continue editing and <button onclick="${upload}">upload</button>
+      </div>
+      <div id="playing-message">
+        ${state.playingMessage}
+      </div>
     </div>
-  </div>
-  <div id="backlink">
-  <div id="back-message">
-    <a onclick=${back}>back to top!</a>
-  </div>
-  </div>
-  <div id="editor-console">
-  <span id="editor-console-message"></span>
-  </div>
+    <div id="backlink">
+      <div id="back-message">
+        <a onclick=${back}>back to top!</a>
+      </div>
+    </div>
+    <div id="editor-console">
+      <span id="editor-console-message"></span>
+    </div>
   </div>`;
   function back() {
     emit("stop");
