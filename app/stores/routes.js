@@ -18,6 +18,7 @@ module.exports = function (state, emitter) {
       // top page
       state.editorSetup = false;
       emitter.emit("requests:loadSessions");
+      emitter.emit("engine:clearEditor");
     }
     else if (isEditor) {
       // editor

@@ -138,4 +138,7 @@ module.exports = function (state, emitter) {
   emitter.on("engine:focus", () => {
     cm.focus();
   });
+  emitter.on("engine:clearEditor", () => {
+    cm.setValue("");
+  });
 };
