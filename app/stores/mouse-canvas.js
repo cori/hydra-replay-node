@@ -133,10 +133,12 @@ module.exports = function (state, emitter) {
         }
         ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         ctx.drawImage(cursorImg, cursor.x * canvasElement.width, cursor.y * canvasElement.height);
-        cursor.x = prevRecords[curBlock].values[i][0];
-        cursor.y = prevRecords[curBlock].values[i][1];
-        window.mouseX = cursor.x; // !!!
-        window.mouseY = cursor.y; // !!!
+        if (prevRecords[curBlock].values[i][0] !== undefined && prevRecords[curBlock].values[i][1] != undefined) {
+          cursor.x = prevRecords[curBlock].values[i][0];
+          cursor.y = prevRecords[curBlock].values[i][1];
+          window.mouseX = cursor.x; // !!!
+          window.mouseY = cursor.y; // !!!
+        }
         curBlock += curBlockIncr;
       }, 1000 / logFps / speed);
     }
