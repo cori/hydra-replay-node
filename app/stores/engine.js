@@ -133,8 +133,8 @@ module.exports = function (state, emitter) {
       }
     }
   });
-  emitter.on("getRecords", (func) => {
-    func(codeRecorder.getRecords());
+  emitter.on("getRecords", () => {
+    state.records = codeRecorder.getRecords();
   });
   emitter.on("setRecords", (records) => {
     codePlayer.addOperations(records);
