@@ -74,7 +74,7 @@ module.exports = function (state, emitter) {
         console.log(activityRecorded);
       },
       onEndedHandler: () => {
-        emitter.emit("playbackEnd");
+        emitter.emit("editor:playbackEnd");
       }
     });
   }
@@ -92,17 +92,17 @@ module.exports = function (state, emitter) {
     });
   }
 
-  emitter.on("initRecorder", () => {
+  emitter.on("engine:initRecorder", () => {
     setupRecorder();
     hydra.eval("hush(); solid().out()");
     cm.setOption("readOnly", false);
     cm.setValue("");
     cm.refresh();
   });
-  emitter.on("switchToRecorder", () => {
+  emitter.on("engine:switchToRecorder", () => {
     cm.setOption("readOnly", false);
   });
-  emitter.on("initPlayer", () => {
+  emitter.on("engine:initPlayer", () => {
     setupRecorder();
     if (codePlayer !== undefined) {
       codePlayer.pause();
@@ -112,30 +112,30 @@ module.exports = function (state, emitter) {
     cm.refresh();
     cm.setOption("readOnly", true);
   });
-  emitter.on("play", () => {
+  emitter.on("engine:play", () => {
     codePlayer.play();
   });
-  emitter.on("stop", () => {
+  emitter.on("engine:stop", () => {
     if (codePlayer != undefined) {
       codePlayer.pause();
     }
   });
-  emitter.on("exec", (code) => {
+  emitter.on("engine:exec", (code) => {
     try {
       const ret = eval(code);
-      emitter.emit("showEvalOnMenu", { success: true, e: ret });
+      emitter.emit("editor:showEval", { success: true, e: ret });
     } catch (e) {
       console.log(e);
-      emitter.emit("showEvalOnMenu", { success: false, e });
+      emitter.emit("editor:showEval", { success: false, e });
     }
   });
-  emitter.on("getRecords", () => {
+  emitter.on("engine:getRecords", () => {
     state.records = codeRecorder.getRecords();
   });
-  emitter.on("setRecords", (records) => {
+  emitter.on("engine:setRecords", (records) => {
     codePlayer.addOperations(records);
   });
-  emitter.on("focus", () => {
+  emitter.on("engine:focus", () => {
     cm.focus();
   });
 };

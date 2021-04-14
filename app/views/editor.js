@@ -24,11 +24,11 @@ module.exports = function (state, emit) {
     </div>
   </div>`;
   function back() {
-    emit("stop");
+    emit("engine:stop");
     emit("pushState", "/");
   }
   function upload(e) {
-    emit("getRecords");
-    emit("upload");
+    emit("engine:getRecords");
+    emit("requests:upload");
   }
 };

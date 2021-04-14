@@ -51,7 +51,7 @@ const getCurrentBlock = function(cm) {
 const commands = {
   evalAll: ({ cm, emitter }) => {
     const code = getAll(cm);
-    emitter.emit("exec", code);
+    emitter.emit("engine:exec", code);
   },
   // toggleEditor: ({ cm, engine }) => {
   //   const editors = document.getElementById("editors");
@@ -63,14 +63,14 @@ const commands = {
   // },
   evalLine: ({ cm, emitter }) => {
     const code = getLine(cm);
-    emitter.emit("exec", code);
+    emitter.emit("engine:exec", code);
   },
   // toggleComment: ({ cm, engine }) => {
   //   cm.toggleComment();
   // },
   evalBlock: ({ cm, emitter }) => {
     const code = getCurrentBlock(cm);
-    emitter.emit("exec", code);
+    emitter.emit("engine:exec", code);
   }
 };
 

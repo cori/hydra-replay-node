@@ -17,17 +17,17 @@ module.exports = function (state, emitter) {
     if (isWelcome) {
       // top page
       state.editorSetup = false;
-      emitter.emit("loadSessions");
+      emitter.emit("requests:loadSessions");
     }
     else if (isEditor) {
       // editor
       state.startTime = +new Date;
       const id = state.params.id;
 
-      emitter.emit("initPlayer");
-      emitter.emit("initRecorder");
+      emitter.emit("engine:initPlayer");
+      emitter.emit("engine:initRecorder");
 
-      emitter.emit("setupEditor", id);
+      emitter.emit("editor:setup", id);
     }
   });
 }

@@ -2,21 +2,22 @@ const html = require("choo/html");
 const defaultCode = require("./default-code.js");
 
 module.exports = function (state, emitter) {
-  emitter.on("setupEditor", (id) => {
+  emitter.on("editor:setup", (id) => {
     state.editorConsole = html`<span id="editor-console-message"></span>`;
     state.uploadButton = undefined;
     const remix = id !== undefined;
     if (remix) {
       state.playingMessage = html`<div id="playing-message">replaying...</div>`;
-      emitter.emit("getSession", id, (data) => {
+      emitter.emit("requests:getSession", id, (data) => {
+        // bad
         const session = data;
         state.sessionName = session.name;
 
         state.playingMessage = html`<div id="playing-message">replaying... ${state.sessionName}</div>`;
         state.editorSetup = true;
         state.prevRecords = session.records;
-        emitter.emit("setRecords", state.prevRecords);
-        emitter.emit("play");
+        emitter.emit("engine:setRecords", state.prevRecords);
+        emitter.emit("engine:play");
         emitter.emit("render");
       });
     }
@@ -30,19 +31,19 @@ module.exports = function (state, emitter) {
       state.prevRecords = defaultCode.records;
 
       //wtf
-      emitter.emit("setRecords", state.prevRecords);
-      emitter.emit("play");
+      emitter.emit("engine:setRecords", state.prevRecords);
+      emitter.emit("engine:play");
       emitter.emit("render");
     }
   });
 
-  emitter.on("playbackEnd", () => {
+  emitter.on("editor:playbackEnd", () => {
     if (state.params.mode == "remix") {
       state.sessionName = "Re: " + state.sessionName;
     }
     console.log("finished")
     state.playingMessage = "";
-    emitter.emit("switchToRecorder");
+    emitter.emit("engine:switchToRecorder");
     state.uploadButton = function (upload) {
       return html`<div id="upload-button">
       continue editing and <button onclick="${upload}">upload</button>
@@ -51,7 +52,7 @@ module.exports = function (state, emitter) {
     emitter.emit("render");
   });
 
-  emitter.on("showEvalOnMenu", ({ success, e }) => {
+  emitter.on("editor:showEval", ({ success, e }) => {
     const text = `${e !== undefined ? e : ""}`;
     state.editorConsole.innerText = text;
     if (!success) {
