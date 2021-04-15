@@ -20,10 +20,12 @@ function notFound() {
 // import a template
 const views = {
   welcome: require("./views/welcome.js"),
+  what: require("./views/what.js"),
   editor: require("./views/editor.js"),
 }
 
 app.route("/", views.welcome);
+app.route("#what", views.what);
 app.route("#:mode", views.editor);
 app.route("#:mode/:id", views.editor);
 
