@@ -110,7 +110,7 @@ module.exports = function (state, emitter) {
         emitter.emit("engine:updateCurrentTime");
         const t = state.engine.time / 1000;
         let i = 0;
-        if (fps < 1) {
+        if (prevRecords[curBlock].fps < 1) {
           // ???? 
         }
         else {
